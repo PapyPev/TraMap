@@ -1,124 +1,175 @@
-/** ***************************************************************************
- * ContentProperties Class.
- *
- * @author Pev
- * @version 1.0
- *************************************************************************** */
+/*
+|------------------------------------------------------------------------------
+| Class Content Properties
+|------------------------------------------------------------------------------
+|
+| This class contains all content properties from configContent.json.
+|
+| @author Pev
+| @verion 1.1.4
+|
+|------------------------------------------------------------------------------
+*/
 
-/* ============================================================================
- * CONSTRUCTOR
- * ========================================================================= */
+// ============================================================================
+// CONSTRUCTOR
+// ============================================================================
 
 /**
- * Creates an instance of ContentProperties.
- *
+ * [Creates an instance of ContentProperties]
  * @constructor
  * @this {ContentProperties}
- * @param {string} filePath Path or URL to JSON config file 
+ * @param {String} filePath [Path or URL to JSON config file]
  */
 function ContentProperties (filePath) {
 
   // Read configuration file from JSON
   var contentParameters = getContentConfig(filePath);
 
-  /** @private */ this.div_toc_title = contentParameters.div_toc_title;
-  /** @private */ this.div_toc_content = contentParameters.div_toc_content;
-  /** @private */ this.div_toc_descript = contentParameters.div_toc_descript;
-  /** @private */ this.div_popup_content = contentParameters.div_popup_content;
-  /** @private */ this.content_toc_title = contentParameters.content_toc_title;
-  /** @private */ this.content_toc_descript = contentParameters.content_toc_descript;
-  /** @private */ this.content_overTheMap = contentParameters.content_overTheMap;
+  /**
+   * [Name of the HTML div contains Table of Content title]
+   * @type {String}
+   * @private
+   */
+  this.div_toc_title = contentParameters.div_toc_title;
 
-  // Log console
-  var attributesToLog = [{
-    "div_toc_title" : this.div_toc_title,
-    "div_toc_content" : this.div_toc_content,
-    "div_toc_descript" : this.div_toc_descript,
-    "div_popup_content" : this.div_popup_content,
-    "content_toc_title" : this.content_toc_title,
-    "content_toc_descript" : this.content_toc_descript,
-    "content_overTheMap" : this.content_overTheMap
-  }];
-  console.log('classContentProperties.ContentProperties()');
-  console.log(attributesToLog);
+  /**
+   * [Name of the HTML div contains Table of Content content]
+   * @type {String}
+   * @private
+   */
+  this.div_toc_content = contentParameters.div_toc_content;
 
-};
+  /**
+   * [Name of the HTML div contains Table of Content description]
+   * @type {String}
+   * @private
+   */
+  this.div_toc_descript = contentParameters.div_toc_descript;
 
-/* ============================================================================
- * GETTERS
- * ========================================================================= */
+  /**
+   * [Name of the HTML div contains Popup content]
+   * @type {String}
+   * @private
+   */
+  this.div_popup_content = contentParameters.div_popup_content;
+
+  /**
+   * [Value of the Table of Content title]
+   * @type {String}
+   * @private
+   */
+  this.content_toc_title = contentParameters.content_toc_title;
+
+  /**
+   * [Value of the Table of Content description]
+   * @type {String}
+   * @private
+   */
+  this.content_toc_descript = contentParameters.content_toc_descript;
+
+  /**
+   * [JSON object contains all popup information to pu over the map]
+   * @type {json}
+   * @private
+   */
+  this.content_overTheMap = contentParameters.content_overTheMap;
+
+}
+
+// ============================================================================
+// GETTERS
+// ============================================================================
 
 /**
- * Get Div TOC title name.
+ * [Get Div TOC title name]
  * @this {ContentProperties}
- * @return {string} The name of the div toc title.
+ * @return {String} [The name of the div toc title]
  */
 ContentProperties.prototype.getDivTocTitle = function () {
   return this.div_toc_title;
 };
 
+// ----------------------------------------------------------------------------
+
 /**
- * Get Div TOC content name.
+ * [Get Div TOC content name]
  * @this {ContentProperties}
- * @return {string} The name of the div toc content.
+ * @return {String} [The name of the div toc content]
  */
 ContentProperties.prototype.getDivTocContent = function () {
   return this.div_toc_content;
 };
 
+// ----------------------------------------------------------------------------
+
 /**
- * Get Div TOC description name.
+ * [Get Div TOC description name]
  * @this {ContentProperties}
- * @return {string} The name of the div toc description.
+ * @return {String} [The name of the div toc description]
  */
 ContentProperties.prototype.getDivTocDescript = function () {
   return this.div_toc_descript;
 };
+
+// ----------------------------------------------------------------------------
 
 /**
  * Get Div Popup content name.
  * @this {ContentProperties}
  * @return {string} The name of the div popup content.
  */
+/**
+ * [Get Div Popup content name]
+ * @this {ContentProperties}
+ * @return {String} [The name of the div popup content]
+ */
 ContentProperties.prototype.getDivPopupContent = function () {
   return this.div_popup_content;
 };
 
+// ----------------------------------------------------------------------------
+
 /**
- * Get Toc Title content.
+ * [Get Toc Title content]
  * @this {ContentProperties}
- * @return {string} The content of the TOC title.
+ * @return {String} [The content of the TOC title]
  */
 ContentProperties.prototype.getContentTocTitle = function () {
   return this.content_toc_title;
 };
 
+// ----------------------------------------------------------------------------
+
 /**
- * Get Toc Description content.
+ * [Get Toc Description content]
  * @this {ContentProperties}
- * @return {string} The content of the TOC description.
+ * @return {String} [The content of the TOC description]
  */
 ContentProperties.prototype.getContentTocDescript = function () {
   return this.content_toc_descript;
 };
 
+// ----------------------------------------------------------------------------
+
 /**
- * Get Popup content (overTheMap).
+ * [Get Popup content (overTheMap)]
  * @this {ContentProperties}
- * @return {object} The popup json content.
+ * @return {json} [The popup json content]
  */
 ContentProperties.prototype.getContentOverTheMap = function () {
   return this.content_overTheMap;
 };
 
-/* ============================================================================
- * FUNCTIONS
- * ========================================================================= */
+// ============================================================================
+// FUNCTIONS
+// ============================================================================
 
 /**
- * Get GeoServer Configurations from JSON file
- * @param {string} filePath Path to the json file (or url)
- * @return {json} Content configuration : JSON content
+ * [Get GeoServer Configurations from JSON file]
+ * @this {ContentProperties}
+ * @param  {String} filePath [Path to the json file (or url)]
+ * @return {json}          [Content configuration : JSON content]
  */
 function getContentConfig (filePath) {
 
@@ -146,4 +197,4 @@ function getContentConfig (filePath) {
   });
 
   return contentConfig;
-};
+} //-- end getContentConfig (filePath)

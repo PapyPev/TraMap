@@ -1,126 +1,172 @@
-/** ***************************************************************************
- * MapProperties Class.
- *
- * @author Pev
- * @version 1.1
- *************************************************************************** */
+/*
+|------------------------------------------------------------------------------
+| Class Map Properties
+|------------------------------------------------------------------------------
+|
+| This class contains all map properties from configMap.json.
+|
+| @author Pev
+| @verion 1.1.4
+|
+|------------------------------------------------------------------------------
+*/
 
-/* ============================================================================
- * CONSTRUCTOR
- * ========================================================================= */
+// ============================================================================
+// CONSTRUCTOR
+// ============================================================================
 
 /**
- * Creates an instance of MapProperties.
- *
+ * [Creates an instance of MapProperties]
  * @constructor
  * @this {MapProperties}
- * @param {string} name Map's name
- * @param {string} filePath Path or URL to JSON config file
+ * @param {String} name     [The name of the map]
+ * @param {String} filePath [Path or URL to JSON config file]
  */
 function MapProperties (name, filePath) {
 
   // Read configuration file from JSON
   var mapParameters = getMapConfig(filePath);
 
-  /** @private */ this.name = name;
-  /** @private */ this.center = mapParameters.center;
-  /** @private */ this.zoom = mapParameters.zoom;
-  /** @private */ this.projection = mapParameters.projection;
-  /** @private */ this.mapboxToken = mapParameters.mapbox_token;
-  /** @private */ this.sidebarPos = mapParameters.sidebar_pos;
-  /** @private */ this.maxFeatures = mapParameters.maxFeatures;
+  /**
+   * [The name of the map]
+   * @type {String}
+   * @private
+   */
+  this.name = name;
 
-  // Log console
-  var attributesToLog = [{
-    "name": this.name, 
-    "center": this.center,
-    "zoom": this.zoom,
-    "projection": this.projection,
-    "mapboxToken":  this.mapboxToken,
-    "sidebarPos": this.sidebarPos,
-    "maxFeatures" : this.maxFeatures
-  }];
-  console.log('classMapProperties.MapProperties('+name+')');
-  console.log(attributesToLog);
+  /**
+   * [The default map center coordinates lat/long]
+   * @type {array}
+   * @private
+   */
+  this.center = mapParameters.center;
 
-};
+  /**
+   * [The default zoom level]
+   * @type {Number}
+   * @private
+   */
+  this.zoom = mapParameters.zoom;
 
-/* ============================================================================
- * GETTERS
- * ========================================================================= */
+  /**
+   * [The default map projection]
+   * @type {String}
+   * @private
+   */
+  this.projection = mapParameters.projection;
+
+  /**
+   * [Token for getting MapBox tiles]
+   * @type {String}
+   * @private
+   */
+  this.mapboxToken = mapParameters.mapbox_token;
+
+  /**
+   * [The sidebar position (left or right)]
+   * @type {String}
+   * @private
+   */
+  this.sidebarPos = mapParameters.sidebar_pos;
+
+  /**
+   * [Number of feature loaded by layer query]
+   * @type {Number}
+   * @private
+   */
+  this.maxFeatures = mapParameters.maxFeatures;
+
+}
+
+// ============================================================================
+// GETTERS
+// ============================================================================
 
 /**
- * Get Map's name.
+ * [Get Map's name]
  * @this {MapProperties}
- * @return {string} The map's name.
+ * @return {String} [The map's name]
  */
 MapProperties.prototype.getName = function () {
   return this.name;
 };
 
+// ----------------------------------------------------------------------------
+
 /**
- * Get Map's default center.
+ * [Get Map's default center]
  * @this {MapProperties}
- * @return {list} The default map's center.
+ * @return {array} [The default map's center coordinates]
  */
 MapProperties.prototype.getCenter = function () {
   return [this.center[0], this.center[1]];
 };
 
+// ----------------------------------------------------------------------------
+
 /**
- * Get Map's default zoom.
+ * [Get Map's default zoom level]
  * @this {MapProperties}
- * @return {number} The default map's zoom.
+ * @return {Number} [The default map's zoom level]
  */
 MapProperties.prototype.getZoom = function () {
   return this.zoom;
 };
 
+// ----------------------------------------------------------------------------
+
 /**
- * Get Map's default projection.
+ * [Get Map's default projection]
  * @this {MapProperties}
- * @return {string} The default map's projection.
+ * @return {String} [The default map's projection]
  */
 MapProperties.prototype.getProjection = function () {
   return this.projection;
 };
 
+// ----------------------------------------------------------------------------
+
 /**
- * Get Mapbox token.
+ * [Get Mapbox token]
  * @this {MapProperties}
- * @return {string} The MapBox token.
+ * @return {String} [The MapBox token]
  */
 MapProperties.prototype.getMapboxToken = function () {
   return this.mapboxToken;
 };
 
+// ----------------------------------------------------------------------------
+
 /**
- * Get Map's default sidebar position.
+ * [Get Map's default sidebar position]
  * @this {MapProperties}
- * @return {string} The sidebar position (left/right).
+ * @return {String} [The sidebar position (left/right)]
  */
 MapProperties.prototype.getSidebarPos = function () {
   return this.sidebarPos;
 };
 
+// ----------------------------------------------------------------------------
+
 /**
- * Get Map's default maxFeatures.
+ * [Get Map's default maxFeatures]
  * @this {MapProperties}
- * @return {number} The max features per query.
+ * @return {Number} [The max features per query]
  */
 MapProperties.prototype.getMaxFeatures = function () {
   return this.maxFeatures;
 };
 
-/* ============================================================================
- * METHODS
- * ========================================================================= */
+// ============================================================================
+// METHODS
+// ============================================================================
 
 /**
- * String representation of MapProperties
+ * [String representation of MapProperties]
  * @overide
  * @this{MapProperties}
- * @return {string} Human-readable representation of this MapProperties.
+ * @return {String} [Human-readable representation of this
+ * MapProperties]
  */
 MapProperties.prototype.toString = function() {
   var attributesToLog = [{
@@ -132,19 +178,17 @@ MapProperties.prototype.toString = function() {
     sidebarPos: this.sidebarPos,
     maxFeatures: this.maxFeatures
   }];
-  console.log('classMapProperties.toString():');
-  console.log(attributesToLog);
-  return attributesToLog;
+  return JSON.stringify(attributesToLog);
 };
 
-/* ============================================================================
- * FUNCTIONS
- * ========================================================================= */
+// ============================================================================
+// FUNCTIONS
+// ============================================================================
 
 /**
- * Get Map Configurations from JSON file
- * @param {string} filePath Path to the json file (or url)
- * @return {json} Map configuration : JSON content
+ * [Get Map Configurations from JSON file]
+ * @param  {String} filePath [Path to the json file (or url)]
+ * @return {json}          [Map configuration : JSON content]
  */
 function getMapConfig (filePath) {
 
@@ -172,4 +216,4 @@ function getMapConfig (filePath) {
   });
 
   return mapConfig;
-};
+} //-- end getMapConfig (filePath)

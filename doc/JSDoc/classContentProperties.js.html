@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: classContentProperties.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: classContentProperties.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/*
+|------------------------------------------------------------------------------
+| Class Content Properties
+|------------------------------------------------------------------------------
+|
+| This class contains all content properties from configContent.json.
+|
+| @author Pev
+| @verion 1.1.4
+|
+|------------------------------------------------------------------------------
+*/
+
+// ============================================================================
+// CONSTRUCTOR
+// ============================================================================
+
+/**
+ * [Creates an instance of ContentProperties]
+ * @constructor
+ * @this {ContentProperties}
+ * @param {String} filePath [Path or URL to JSON config file]
+ */
+function ContentProperties (filePath) {
+
+  // Read configuration file from JSON
+  var contentParameters = getContentConfig(filePath);
+
+  /**
+   * [Name of the HTML div contains Table of Content title]
+   * @type {String}
+   * @private
+   */
+  this.div_toc_title = contentParameters.div_toc_title;
+
+  /**
+   * [Name of the HTML div contains Table of Content content]
+   * @type {String}
+   * @private
+   */
+  this.div_toc_content = contentParameters.div_toc_content;
+
+  /**
+   * [Name of the HTML div contains Table of Content description]
+   * @type {String}
+   * @private
+   */
+  this.div_toc_descript = contentParameters.div_toc_descript;
+
+  /**
+   * [Name of the HTML div contains Popup content]
+   * @type {String}
+   * @private
+   */
+  this.div_popup_content = contentParameters.div_popup_content;
+
+  /**
+   * [Value of the Table of Content title]
+   * @type {String}
+   * @private
+   */
+  this.content_toc_title = contentParameters.content_toc_title;
+
+  /**
+   * [Value of the Table of Content description]
+   * @type {String}
+   * @private
+   */
+  this.content_toc_descript = contentParameters.content_toc_descript;
+
+  /**
+   * [JSON object contains all popup information to pu over the map]
+   * @type {json}
+   * @private
+   */
+  this.content_overTheMap = contentParameters.content_overTheMap;
+
+}
+
+// ============================================================================
+// GETTERS
+// ============================================================================
+
+/**
+ * [Get Div TOC title name]
+ * @this {ContentProperties}
+ * @return {String} [The name of the div toc title]
+ */
+ContentProperties.prototype.getDivTocTitle = function () {
+  return this.div_toc_title;
+};
+
+// ----------------------------------------------------------------------------
+
+/**
+ * [Get Div TOC content name]
+ * @this {ContentProperties}
+ * @return {String} [The name of the div toc content]
+ */
+ContentProperties.prototype.getDivTocContent = function () {
+  return this.div_toc_content;
+};
+
+// ----------------------------------------------------------------------------
+
+/**
+ * [Get Div TOC description name]
+ * @this {ContentProperties}
+ * @return {String} [The name of the div toc description]
+ */
+ContentProperties.prototype.getDivTocDescript = function () {
+  return this.div_toc_descript;
+};
+
+// ----------------------------------------------------------------------------
+
+/**
+ * Get Div Popup content name.
+ * @this {ContentProperties}
+ * @return {string} The name of the div popup content.
+ */
+/**
+ * [Get Div Popup content name]
+ * @this {ContentProperties}
+ * @return {String} [The name of the div popup content]
+ */
+ContentProperties.prototype.getDivPopupContent = function () {
+  return this.div_popup_content;
+};
+
+// ----------------------------------------------------------------------------
+
+/**
+ * [Get Toc Title content]
+ * @this {ContentProperties}
+ * @return {String} [The content of the TOC title]
+ */
+ContentProperties.prototype.getContentTocTitle = function () {
+  return this.content_toc_title;
+};
+
+// ----------------------------------------------------------------------------
+
+/**
+ * [Get Toc Description content]
+ * @this {ContentProperties}
+ * @return {String} [The content of the TOC description]
+ */
+ContentProperties.prototype.getContentTocDescript = function () {
+  return this.content_toc_descript;
+};
+
+// ----------------------------------------------------------------------------
+
+/**
+ * [Get Popup content (overTheMap)]
+ * @this {ContentProperties}
+ * @return {json} [The popup json content]
+ */
+ContentProperties.prototype.getContentOverTheMap = function () {
+  return this.content_overTheMap;
+};
+
+// ============================================================================
+// FUNCTIONS
+// ============================================================================
+
+/**
+ * [Get GeoServer Configurations from JSON file]
+ * @this {ContentProperties}
+ * @param  {String} filePath [Path to the json file (or url)]
+ * @return {json}          [Content configuration : JSON content]
+ */
+function getContentConfig (filePath) {
+
+  // Returned value
+  var contentConfig;
+
+  // Get JSON
+  $.ajax({
+    type: 'GET',
+    url: filePath,
+    contentType: 'application/json; charset=utf-8',
+    dataType: 'json',
+    success: function(data){
+      contentConfig = data;
+    },
+    error: function(jqXHR, exception){
+      if (jqXHR.status === 401) {
+        console.log('HTTP Error 401 Unauthorized.');
+      } else {
+        console.log('Uncaught Error.\n' + jqXHR.responseText);
+      }
+    },
+    async: false
+
+  });
+
+  return contentConfig;
+} //-- end getContentConfig (filePath)</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ContentProperties.html">ContentProperties</a></li><li><a href="GeoServerProperties.html">GeoServerProperties</a></li><li><a href="LayerProperties.html">LayerProperties</a></li><li><a href="MapProperties.html">MapProperties</a></li><li><a href="RestProperties.html">RestProperties</a></li></ul><h3>Global</h3><ul><li><a href="global.html#_CON_PROP">_CON_PROP</a></li><li><a href="global.html#_MAP_PROP">_MAP_PROP</a></li><li><a href="global.html#_SRV_PROP">_SRV_PROP</a></li><li><a href="global.html#convert_dateForHuman">convert_dateForHuman</a></li><li><a href="global.html#convert_LatLonToMercator">convert_LatLonToMercator</a></li><li><a href="global.html#getContentConfig">getContentConfig</a></li><li><a href="global.html#getGeoServerConfig">getGeoServerConfig</a></li><li><a href="global.html#getMapConfig">getMapConfig</a></li><li><a href="global.html#getRestConfig">getRestConfig</a></li><li><a href="global.html#gs_getGeoserverLayers">gs_getGeoserverLayers</a></li><li><a href="global.html#gs_setPopup">gs_setPopup</a></li><li><a href="global.html#gs_setStyle">gs_setStyle</a></li><li><a href="global.html#loginValidation">loginValidation</a></li><li><a href="global.html#map_init">map_init</a></li><li><a href="global.html#map_laodGeoserverLayers">map_laodGeoserverLayers</a></li><li><a href="global.html#map_loadHtmlTOC">map_loadHtmlTOC</a></li><li><a href="global.html#map_loadTiles">map_loadTiles</a></li><li><a href="global.html#map_refreshGeoserverLayers">map_refreshGeoserverLayers</a></li><li><a href="global.html#map_showLayer">map_showLayer</a></li><li><a href="global.html#popup_buttonContact">popup_buttonContact</a></li><li><a href="global.html#popup_buttonFocus">popup_buttonFocus</a></li><li><a href="global.html#popup_buttonSearchByPointer">popup_buttonSearchByPointer</a></li><li><a href="global.html#popup_getInterests">popup_getInterests</a></li><li><a href="global.html#popup_getIntinerary">popup_getIntinerary</a></li><li><a href="global.html#popup_init">popup_init</a></li><li><a href="global.html#popup_loadEvent">popup_loadEvent</a></li><li><a href="global.html#popup_loadHtmlContent">popup_loadHtmlContent</a></li><li><a href="global.html#popup_loadHtmlFocusInterests">popup_loadHtmlFocusInterests</a></li><li><a href="global.html#ts_loadHtmlStationList">ts_loadHtmlStationList</a></li><li><a href="global.html#tt_acordeonHtmlArrival">tt_acordeonHtmlArrival</a></li><li><a href="global.html#tt_acordeonHtmlDeparture">tt_acordeonHtmlDeparture</a></li><li><a href="global.html#tt_acordeonHtmlEnd">tt_acordeonHtmlEnd</a></li><li><a href="global.html#tt_acordeonHtmlInit">tt_acordeonHtmlInit</a></li><li><a href="global.html#tt_acordeonHtmlMain">tt_acordeonHtmlMain</a></li><li><a href="global.html#tt_acordeonTrainTitle">tt_acordeonTrainTitle</a></li><li><a href="global.html#tt_getStationName">tt_getStationName</a></li><li><a href="global.html#tt_radioUpdateForm">tt_radioUpdateForm</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.3</a> on Fri Nov 13 2015 14:59:06 GMT+0200 (EET)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

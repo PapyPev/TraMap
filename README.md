@@ -71,6 +71,13 @@ En progress :
   <li><a href="https://github.com/documentationjs/documentation">Documentation (JS Doc library)</a></li>
 </ul>
 
+### Tools used
+<ul>
+  <li><a href="http://www.sublimetext.com/">Sublime Text Editor</a></li>
+  <li><a href="https://github.com/spadgos/sublime-jsdocs">SublimeText: Package: DocBlockr</a></li>
+  <li><a href="https://github.com/jsdoc3/jsdoc">JSDoc (generate documentation)</a></li>
+</ul>
+
 ### Informations
 
 <b> Janne </b>

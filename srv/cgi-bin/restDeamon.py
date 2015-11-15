@@ -20,6 +20,7 @@ __status__ = "Progress"
 # =============================================================================
 
 from flask import Flask
+from flask import request
 import json
 import mimerender
 import classDatabase
@@ -44,8 +45,9 @@ app = Flask(__name__)
 #@app.route('/')
 @app.route('/api/')
 @app.route('/api/<service>')
+@app.route('/api/<service>?lat1=<lat1>&lon1=<lon1>&lat2=<lat2>&lon2=<lon2>')
 @mimerender(
-  default = 'html',
+  default = 'json',
   html = render_html,
   xml  = render_xml,
   json = render_json,
@@ -55,7 +57,7 @@ app = Flask(__name__)
 # ROOTING FUNCTION
 # =============================================================================
 
-def api(service='default', param='default'):
+def api(service='default', lat1=0, lon1=0, lat2=0, lon2=0, param='default'):
   """
     Rooting function, return a message containing REST awnser
 
@@ -70,6 +72,9 @@ def api(service='default', param='default'):
     'default' : rest_default(),
     'simpleText' : rest_simpleText(),
     'interests' : rest_interests(),
+    'shortestPath': rest_shortestPath(\
+      request.args.get('lat1'), request.args.get('lon1'), \
+      request.args.get('lat2'), request.args.get('lon2'))
   }.get(service, rest_default())
 
   # Return message
@@ -84,6 +89,13 @@ def api(service='default', param='default'):
 def rest_default():
   """
     REST Service function, return list of all services.
+
+    :Example:
+    >>> rest_default()
+    URL : http://localhost:8082/api/
+
+    :Result:
+    List of HTML links
   """
   value = '<h1>API REST Services</h1>' \
     'Welcome to the API REST Services ! Check all REST services :' \
@@ -94,6 +106,10 @@ def rest_default():
         '<ul><li>Return a simple Text message</li></ul>' \
       '<li><a href="./interests">/api/interests</a></li>' \
         '<ul><li>Return all interests by tables</li></ul>' \
+      '<li><a href="./shortestPath/' \
+        'lat1=60.636088&lon1=24.848033&lat2=60.630822&lon2=24.859875">'\
+        '/api/shortestPath/default</a></li>' \
+        '<ul><li>Return shortest path lines</li></ul>' \
     '</ul>'
   return value
 
@@ -102,6 +118,13 @@ def rest_default():
 def rest_simpleText():
   """
     REST Service function, return a simple text.
+
+    :Example:
+    >>> rest_simpleText()
+    URL : http://localhost:8082/api/simpleText
+
+    :Result:
+    Test ok
   """
   return 'Test ok'
 
@@ -114,6 +137,9 @@ def rest_interests():
 
     :Example:
     >>> rest_interests()
+    URL : http://localhost:8082/api/interests
+    
+    :Result:
     {
       "status" : "ok",
       "result" : [
@@ -206,8 +232,6 @@ def rest_interests():
       ### ---------- GET TYPE ----------
 
       try:
-
-        print('DEBUG: Get Type')
         
         # For each table get interests
         for tableName in tablesList:
@@ -220,8 +244,6 @@ def rest_interests():
 
 
           ### ---------- TREATMENT MATCHING ----------
-
-          print('DEBUG: Treatment: ' + tableName)
 
           # Init and refresh
           interestsSQL = ''
@@ -243,13 +265,8 @@ def rest_interests():
               # Get all type from tableName
               interestsSQL = 'SELECT DISTINCT type FROM {}'.format(tableName)
 
-            print('DEBUG: SQL: ' + interestsSQL)
-
             # Execute the query
             interestsResult = db._execute(interestsSQL)
-
-            print('DEBUG: RESULTS: ')
-            print(interestsResult)
 
             # Save interests on intersts list
             for i in interestsResult:
@@ -293,13 +310,60 @@ def rest_interests():
     # Return the json object
     return json_data 
 
+# REST - ALL TABLES
+# -----------------------------------------------------------------------------
+def rest_shortestPath(lat1=0, lon1=0, lat2=0, lon2=0):
+  """
+    Return a JSON object with the geometry path shortestpath, 
+    time (in seconds) and distance (in meters)
 
+    :Parameters:
+      lat1
+        Latitude of the first point (start)
+      lon1
+        Longitude of the first point (start)
+      lat2
+        Latitude of the second point (arrival)
+      lon2
+        Longitude of the second point (arrival)
+
+    :Example:
+    >>> rest_shortestPath(60.639481, 24.851273, 60.631668, 24.858296)
+    URL : http://localhost:8082/api/shortestPath?lat1=60.639481&lon1=24.851273&lat2=60.631668&lon2=24.858296
+
+    :Result:
+    {
+      "status":"ok,
+      "result":
+      {
+        "distance":10,
+        "time":5400,
+        "feature": [
+          {geometry object},
+          {geometry object}
+        ]
+      }
+    }
+  """
+
+  print('lat1:{}'.format(lat1))
+  print('lon1:{}'.format(lon1))
+  print('lat2:{}'.format(lat2))
+  print('lon2:{}'.format(lon2))
+
+  return {
+    'lat1':lat1,
+    'lon1':lon1,
+    'lat2':lat2,
+    'lon2':lon2
+  }
 
 
 # MAIN
 # =============================================================================
 
 if __name__ == "__main__":
+  app.debug = True
   app.run(port=8082)
 
 

@@ -1,22 +1,41 @@
-/** ***************************************************************************
- * actionMapLoader.
- * Initialize map content and all functions for update or map actions
- *
- * @author Pev
- * @version 4.6
- *************************************************************************** */
+/*
+|------------------------------------------------------------------------------
+| Action Map Loader
+|------------------------------------------------------------------------------
+|
+| Initialize map content and all functions for update or map actions.
+|
+| @author Pev
+| @verion 1.1.7
+|
+|------------------------------------------------------------------------------
+*/
 
-/* ============================================================================
- * CONSTANTS
- * ========================================================================= */
+// ============================================================================
+// CONSTANTS
+// ============================================================================
 
-MAP_PROP = './config/configMap.json';
-SRV_PROP = './config/configServer.json';
-CON_PROP = './config/configContent.json';
+/**
+ * Configuration file about the main map
+ * @type {String}
+ */
+var _MAP_PROP = './config/configMap.json';
 
-/* ============================================================================
- * GLOBALS
- * ========================================================================= */
+/**
+ * Configuration file about the Geoserver and REST API
+ * @type {String}
+ */
+var _SRV_PROP = './config/configServer.json';
+
+/**
+ * Configuration file about the Content to put on the map
+ * @type {String}
+ */
+var _CON_PROP = './config/configContent.json';
+
+// ============================================================================
+// GLOBALS
+// ============================================================================
 
 // Current map
 var map;
@@ -33,26 +52,25 @@ var mapLayers;
 // Sidebar
 var sidebar;
 
-/* ============================================================================
- * FUNCTIONS
- * ========================================================================= */
+// ============================================================================
+// FUNCTIONS
+// ============================================================================
 
 /**
- * Refresh the existing GeoServer Layers
- * @param {bbox} mapBoundingBox The current bounding box of the map
- --------------------------------------------------------------------------- */
-function refreshGeoServerLayers (mapBoundingBox) {
-  console.log("actionMapLoader.refreshGeoServerLayers(...)");
+ * [Refresh the existing GeoServer Layers]
+ * @param  {Object} mapBoundingBox [The current bounding box of the map]
+ */
+function map_refreshGeoserverLayers (mapBoundingBox) {
 
   for (var i = 0; i < mapLayers.length; i++) {
     if (mapLayers[i].getCheck()) {
 
       // Reprojection coordinate system
-      var sw = LatLonToMercator(
+      var sw = convert_LatLonToMercator(
         mapBoundingBox._southWest.lat,
         mapBoundingBox._southWest.lng
       );
-      var ne = LatLonToMercator(
+      var ne = convert_LatLonToMercator(
         mapBoundingBox._northEast.lat,
         mapBoundingBox._northEast.lng
       );
@@ -64,23 +82,24 @@ function refreshGeoServerLayers (mapBoundingBox) {
       // if it's not a Tiles layer
       if (mapLayers[i].getCategory()!='Background') {
         mapLayers[i].getContent().refresh(url);
-      };
+      }
 
-    }; // end if check
-  }; // end for mapLayers
-}; //--- end refreshGeoServerLayers (mapBoundingBox)
+    } // end if check
+  } // end for mapLayers
+
+} //--- end map_refreshGeoserverLayers (mapBoundingBox)
+
+// ----------------------------------------------------------------------------
 
 /**
- * Load and reload GeoServer Layers with Bounding box query
- * @param {boundingBox} mapBoundingBox The bounding box of the current map
- --------------------------------------------------------------------------- */
-function loadGeoServerLayers (mapBoundingBox) {
-  console.log('actionMapLoader.loadGeoServerLayers(...)');
-  console.log(mapBoundingBox);
+ * [Load GeoServer Layers with Bounding box query]
+ * @param  {Object} mapBoundingBox [description]
+ */
+function map_laodGeoserverLayers (mapBoundingBox) {
 
   // Get GeoServer Layer
   var listGeoServerLayer = [];
-  listGeoServerLayer = getGeoServerLayers(
+  listGeoServerLayer = gs_getGeoserverLayers(
     geoServerProperties.getAddress(), 
     geoServerProperties.getRepository(),
     mapProperties.getProjection(),
@@ -93,18 +112,19 @@ function loadGeoServerLayers (mapBoundingBox) {
     mapLayers.push(listGeoServerLayer[i]);
     if (listGeoServerLayer[i].getCheck()) {
       map.addLayer(listGeoServerLayer[i].getContent());
-    };
-  };
-}; //--- end loadGeoServerLayers(mapBoundingBox)
+    }
+  }
+
+} //--- end map_laodGeoserverLayers(mapBoundingBox)
+
+// ----------------------------------------------------------------------------
 
 /**
- * TOC action on the checkbox or radio button
- * @param {number} i Index of the layer in listOfLayer
- * @param {string} type Type of layer (Radio, Checkbox)
- --------------------------------------------------------------------------- */
-function changeLayer (i, type) {
-  console.log('actionMapLoader.changeLayer(' 
-    + i + ',' + mapLayers[i].getCheck() +') -> ' + mapLayers[i].getName());
+ * [On the TOC layer radio/checkbox action : show or hide a layer]
+ * @param  {Number} i    [Index of the layer in listOfLayer]
+ * @param  {String} type [Type of layer (Radio, Checkbox)]
+ */
+function map_showLayer (i, type) {
 
   // If the layer is viewable
   if (mapLayers[i].getCheck()) {
@@ -121,16 +141,17 @@ function changeLayer (i, type) {
       && j != i && type=='Radio') {
       mapLayers[j].setCheck(false);
       map.removeLayer(mapLayers[j].getContent());
-    };
-  };
+    }
+  }
 
-}; //--- end changeLayer (i)
+} //--- map_showLayer (i, type)
+
+// ----------------------------------------------------------------------------
 
 /**
- * Load content of Table Of Content (TOC).
- --------------------------------------------------------------------------- */
-function loadTOC () {
-  console.log('actionMapLoader.loadTOC()');
+ * [Load content of Table Of Content (TOC).]
+ */
+function map_loadHtmlTOC () {
 
   // Add TOC title and description
   $("#"+contentProperties.getDivTocTitle()+"").html(
@@ -147,18 +168,20 @@ function loadTOC () {
   for (var i = 0; i < mapLayers.length; i++) {
 
     // Test if it's the first category or a new
-    if (i==0 
+    if (i===0 
       || mapLayers[i].getCategory()!=mapLayers[i-1].getCategory()) {
       toc += '<div class="panel panel-default">'
         + '<div class="panel-heading">'
         +   '<h6 class="panel-title">'+mapLayers[i].getCategory()+'</h6>'
         + '</div>'
-        + '<div class="panel-body">'
-    };
+        + '<div class="panel-body">';
+    }
 
     // Test if checkbox is checked
     var check = "";
-    if (mapLayers[i].getCheck()==true) {check="checked"};
+    if (mapLayers[i].getCheck()===true) {
+      check="checked";
+    }
 
     // Test type of data 
     switch(mapLayers[i].getType()){
@@ -168,13 +191,13 @@ function loadTOC () {
           +       '<input type="radio" '
           +       'name="'+mapLayers[i].getCategory()+'" '
           +       'id="'+mapLayers[i].getPosition()+'" '
-          +       'onclick="changeLayer('+i+',\''
+          +       'onclick="map_showLayer('+i+',\''
           +           mapLayers[i].getType()+'\')" '
           +       check + '>'
           +     '</span>'
           +   '<input type="text" class="form-control" '
           +       'value="'+mapLayers[i].getAlias()+'" readonly>'
-          + '</div>'
+          + '</div>';
         break;
       case "Checkbox":
         // Create layer row
@@ -183,13 +206,13 @@ function loadTOC () {
           +       '<input type="checkbox" '
           +       'name="'+mapLayers[i].getName()+'" '
           +       'id="'+mapLayers[i].getPosition()+'" '
-          +        'onchange="changeLayer('+i+',\''
+          +        'onchange="map_showLayer('+i+',\''
           +           mapLayers[i].getType()+'\')" '
           +       check + '>'
           +     '</span>'
           +   '<input type="text" class="form-control" '
           +       'value="'+mapLayers[i].getAlias()+'" readonly>'
-          + '</div>'
+          + '</div>';
         break;
       default:
         // Nothing
@@ -201,34 +224,34 @@ function loadTOC () {
       // Test if we need to close category
       if (mapLayers[i].getCategory()!=mapLayers[i+1].getCategory()) {
         toc += '</div></div>';
-      };
+      }
     } else{
       toc += '</div></div>';
-    };
+    }
 
-  };
+  }
 
   // Write to the HTML div
   $("#"+contentProperties.getDivTocContent()+"").html(toc).trigger("create");
-  // console.log('actionMapLoader.loadToc() [html]');
-  // console.log(toc);
-}; //--- end loadTOC()
+
+} //--- end map_loadHtmlTOC()
+
+// ----------------------------------------------------------------------------
 
 /**
- * Add Tiles background to mapLayers
- * @return {array} List of tiles LayerProperties (classLayerProperties).
- --------------------------------------------------------------------------- */
-function loadTiles () {
-  console.log('actionMapLoader.loadTiles()');
+ * [Add Tiles background to mapLayers]
+ * @return {array} [List of tiles LayerProperties (classLayerProperties)]
+ */
+function map_loadTiles () {
 
   // Returned value
-  listOfLayers = [];
+  var listOfLayers = [];
 
   // Create Copyright
   var tiles_copyright = 'Map data &copy;' 
     + '<a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' 
     + '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, '
-    + 'Imagery © <a href="http://mapbox.com">Mapbox</a>'
+    + 'Imagery © <a href="http://mapbox.com">Mapbox</a>';
 
   // Get tiles sources
   var mbUrl = 'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?'
@@ -238,11 +261,11 @@ function loadTiles () {
   var bgLight = L.tileLayer(mbUrl, {
     id: 'mapbox.light', 
     attribution: tiles_copyright
-  })
+  });
   var bgDark = L.tileLayer(mbUrl, {
     id: 'mapbox.dark', 
     attribution: tiles_copyright
-  })
+  });
   var bgStreet = L.tileLayer(mbUrl, {
     id: 'mapbox.streets', 
     attribution: tiles_copyright
@@ -261,19 +284,21 @@ function loadTiles () {
 
   // Return Value
   return listOfLayers;
-}; //--- end loadTiles()
+
+} //--- end map_loadTiles()
+
+// ----------------------------------------------------------------------------
 
 /**
- * Loading all the necessary components of the card
- --------------------------------------------------------------------------- */
-function init () {
-  console.log('actionMapLoader.init()');
+ * Loading all the necessary components of the map
+ */
+function map_init () {
 
   //---------- Load Layers, GeoServer, Content Properties
-  mapProperties = new MapProperties('map', MAP_PROP);
-  geoServerProperties = new GeoServerProperties(SRV_PROP);
-  contentProperties = new ContentProperties(CON_PROP);
-  restProperties = new RestProperties(SRV_PROP);
+  mapProperties = new MapProperties('map', _MAP_PROP);
+  geoServerProperties = new GeoServerProperties(_SRV_PROP);
+  contentProperties = new ContentProperties(_CON_PROP);
+  restProperties = new RestProperties(_SRV_PROP);
 
   //---------- Load Default map
   map = L.map('map', {
@@ -282,12 +307,12 @@ function init () {
   });
 
   //---------- Load Default Background to map
-  mapLayers = loadTiles();
+  mapLayers = map_loadTiles();
   for (var i = 0; i < mapLayers.length; i++) {
     if (mapLayers[i].getCheck()) {
       map.addLayer(mapLayers[i].getContent());
-    };
-  };
+    }
+  }
 
   //---------- Load Sidebar Component
   sidebar = L.control.sidebar('sidebar', {
@@ -298,10 +323,10 @@ function init () {
   //sidebar.show();
 
   //---------- Load Default GeoServer layer 
-  loadGeoServerLayers(map.getBounds());
+  map_laodGeoserverLayers(map.getBounds());
 
   //---------- Load TOC
-  loadTOC();
+  map_loadHtmlTOC();
 
   //---------- Load Actions Buttons
   L.easyButton( '<span class="easy-button">&equiv;</span>', 
@@ -320,31 +345,30 @@ function init () {
   L.easyButton(
     '<span class="glyphicon glyphicon-hand-up" aria-hidden="true"></span>',
     function(){
-      buttonSearchByPointer();
+      popup_buttonSearchByPointer();
     }, 'SearchByPointer'
   ).addTo(map);
 
   //---------- Load Popup
-  loadPopup();
+  popup_init();
 
   //----------- Moving Map view, refresh GeoServerLayer
   map.on('moveend', function() { 
-    refreshGeoServerLayers(map.getBounds());
+    map_refreshGeoserverLayers(map.getBounds());
   });
 
-};
+} //-- end init ()
 
-/* ============================================================================
- * MAIN
- * ========================================================================= */
+// ============================================================================
+// MAIN
+// ============================================================================
 
 /**
  * Action performed when the page is fully loaded
- --------------------------------------------------------------------------- */
+ */
 $(document).ready(function(){
-  console.log('actionMapLoader.$document.ready()');
 
   // initialize all the components of the map
-  init();
+  map_init();
 
 }); //--$(document).ready()

@@ -1,72 +1,80 @@
-/** ***************************************************************************
- * Page Stations Script.
- * List of all stations informations
- *
- * @author Pev
- * @version 1.0
- *************************************************************************** */
+/*
+|------------------------------------------------------------------------------
+| Page Stations Script
+|------------------------------------------------------------------------------
+|
+| List of all stations informations from digitraffic.
+| All function with "ts_" prefix is for Table station
+|
+| @author Pev
+| @verion 1.1.4
+|
+|------------------------------------------------------------------------------
+*/
 
-/* ============================================================================
- * CONSTANTS
- * ========================================================================= */
+// ============================================================================
+// CONSTANTS
+// ============================================================================
 
-DIGI_STATIONS = 'http://rata.digitraffic.fi/api/v1/metadata/stations';
+var DIGI_STATIONS = 'http://rata.digitraffic.fi/api/v1/metadata/stations';
 
-/* ============================================================================
- * FUNCTIONS
- * ========================================================================= */
+// ============================================================================
+// FUNCTIONS
+// ============================================================================
 
 /**
- * Load HTML content for Stations informations
- * @param {json} data JSON response from digitraffic
- --------------------------------------------------------------------------- */
-function loadingStations(data) {
+ * [Load HTML content for Stations informations]
+ * @param  {json} data [Response from digitraffic]
+ */
+function ts_loadHtmlStationList(data) {
 
   // Init the html return value
   var htmlContent = '';
-  htmlContent += '<table class="table table-striped">'
-  htmlContent += '<thead>'
-  htmlContent +=  '<tr>'
-  htmlContent +=    '<th>Name</th>'
-  htmlContent +=    '<th>Code</th>'
-  htmlContent +=    '<th>UIC</th>'
-  htmlContent +=    '<th>Lat</th>'
-  htmlContent +=    '<th>Lon</th>'
-  htmlContent +=  '</tr>'
-  htmlContent += '</thead>'
-  htmlContent += '<tbody>'
+
+  // Prepare table
+  htmlContent += '<table class="table table-striped">';
+  htmlContent += '<thead>';
+  htmlContent +=  '<tr>';
+  htmlContent +=    '<th>Name</th>';
+  htmlContent +=    '<th>Code</th>';
+  htmlContent +=    '<th>UIC</th>';
+  htmlContent +=    '<th>Lat</th>';
+  htmlContent +=    '<th>Lon</th>';
+  htmlContent +=  '</tr>';
+  htmlContent += '</thead>';
+  htmlContent += '<tbody>';
 
   // Loop all stations objects
   for (var i = 0; i < data.length; i++) {
     
     // Verification if the train take passengers
     if (data[i].passengerTraffic) {
-      htmlContent += '<tr>'
-      htmlContent += '<td>'+data[i].stationName+'</td>'
-      htmlContent += '<td>'+data[i].stationShortCode+'</td>'
-      htmlContent += '<td>'+data[i].stationUICCode+'</td>'
-      htmlContent += '<td>'+data[i].latitude+'</td>'
-      htmlContent += '<td>'+data[i].longitude+'</td>'
-      htmlContent += '</tr>'
-    };
+      htmlContent += '<tr>';
+      htmlContent += '<td>'+data[i].stationName+'</td>';
+      htmlContent += '<td>'+data[i].stationShortCode+'</td>';
+      htmlContent += '<td>'+data[i].stationUICCode+'</td>';
+      htmlContent += '<td>'+data[i].latitude+'</td>';
+      htmlContent += '<td>'+data[i].longitude+'</td>';
+      htmlContent += '</tr>';
+    }
     
-  };
+  }
 
   // End table
-  htmlContent += '</tbody>'
-  htmlContent += '</table>'
+  htmlContent += '</tbody>';
+  htmlContent += '</table>';
 
   // Print HTML content
   $("#divStations").html(htmlContent);
-};
+} //-- end ts_loadHtmlStationList(data)
 
-/* ============================================================================
- * MAIN
- * ========================================================================= */
+// ============================================================================
+// MAIN
+// ============================================================================
 
 /**
  * Action performed when the page is fully loaded
- --------------------------------------------------------------------------- */
+ */
 $(document).ready(function($) {
 
   // Init XMLHttp request
@@ -78,7 +86,7 @@ $(document).ready(function($) {
   // Load Content
   xhr.onreadystatechange = function () {
     if (this.status == 200 && this.readyState == 4) {
-      loadingStations(JSON.parse(this.responseText));
+      ts_loadHtmlStationList(JSON.parse(this.responseText));
     }
   };
 

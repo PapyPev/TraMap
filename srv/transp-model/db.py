@@ -11,6 +11,10 @@ class Database:
         self.cur.execute(sql,[s.area_name])
         self.area_geometry = self.cur.fetchall()[0][0]
 
+    def create_database_model(self):
+        print "Implement me, please!"
+
+
     def get_od(self):
         sql = "SELECT num_of_people from zones where ST_Intersects(geometry,%s) and valid order by id"
         self.cur.execute(sql ,[self.area_geometry])
@@ -27,9 +31,19 @@ class Database:
         return ret
 
     def get_roads(self):
-        sql = "SELECT id, source_id, target_id, cost, reverse_cost, length, speed, type from roads where ST_Intersects(geometry,%s)"
+        sql = """SELECT r.id, r.source_id, r.target_id, r.cost, r.reverse_cost, r.length, r.speed, r.type, p.pos, p.neg
+            from roads as r, profile as p where ST_Intersects(geometry,%s) and r.id = p.id"""
         self.cur.execute(sql, [self.area_geometry])
-        column_name = {"id": 0, "source": 1, "target": 2, "cost":3 ,"reverse_cost": 4, "length": 5, "speed": 6, "type": 7}
+        column_name = {"id": 0,
+                       "source": 1,
+                       "target": 2,
+                       "cost":3 ,
+                       "reverse_cost": 4,
+                       "length": 5,
+                       "speed": 6,
+                       "type": 7,
+                       "vd_pos": 8,
+                       "vd_neg": 9}
         return (self.cur.fetchall(), column_name)
 
     def general_information(self,area_name, column):
@@ -41,6 +55,8 @@ class Database:
     def save_traffic(self,ids,traffic, direction):
         sql_d = "DELETE FROM traffic where true"
         self.cur.execute(sql_d)
+        sql_seq = "ALTER SEQUENCE traffic_id_seq RESTART WITH 1"
+        self.cur.execute(sql_seq)
         sql = "INSERT INTO traffic(id, road_id, traffic, direction) VALUES (DEFAULT, %s, %s, %s)"
         for i in xrange(0,len(ids)):
             self.cur.execute(sql, [ids[i], traffic[i], direction[i]])
@@ -49,6 +65,8 @@ class Database:
     def save_t(self, matrix, zones_property_id):
         sql_d = "DELETE FROM od_pairs WHERE true;"
         self.cur.execute(sql_d)
+        sql_seq = "ALTER SEQUENCE od_pairs_id_seq RESTART WITH 1"
+        self.cur.execute(sql_seq)
         sql = "INSERT INTO od_pairs(id, origin_id, destination_id, num_of_trip) VALUES (DEFAULT, %s, %s, %s);"
         for i in xrange(matrix.shape[0]):
             for j in xrange(matrix.shape[1]):
