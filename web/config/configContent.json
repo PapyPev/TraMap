@@ -1,0 +1,31 @@
+{
+  "div_toc_title" : "toc-title",
+  "div_toc_content" : "toc-content",
+  "div_toc_descript" : "toc-description",
+  "div_popup_content" : "popup-content",
+  "content_toc_title" : "HAMK MapProject",
+  "content_toc_descript" : "This is a Student map project",
+  "content_overTheMap": [
+    {
+      "id":0,
+      "type":"Popup",
+      "icon":"glyphicon-map-marker",
+      "name":"focus",
+      "view":"views/popupFocus.html"
+    },
+    {
+      "id":1,
+      "type":"Popup",
+      "icon":"glyphicon-envelope",
+      "name":"contact",
+      "view":"views/popupContact.html"
+    },
+    {
+      "id":2,
+      "type":"Popup",
+      "icon":"glyphicon-info-sign",
+      "name":"informations",
+      "view":"views/popupInformations.html"
+    }
+  ]
+}

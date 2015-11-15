@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+  <title>Hamk-MapProject</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <!-- ==================================================================== -->
+  <link rel="icon" type="image/png" href="./img/icon-web/favicon-32x32.png" sizes="32x32" />
+  <link rel="icon" type="image/png" href="./img/icon-web/favicon-16x16.png" sizes="16x16" />
+  <!-- http://stackoverflow.com/questions/4888377/how-to-add-a-browser-tab-icon-for-a-website -->
+
+  <!-- ==================================================================== -->
+  <link rel="stylesheet" 
+    href="./lib/bootstrap/3.3.5-dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" 
+    href="./lib/bootstrap/ext-select/dist/css/bootstrap-select.min.css" />
+  <link rel="stylesheet" 
+    href="./lib/leaflet/1.0.0-b1/leaflet.css" />
+  <!--[if lte IE 8]>
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.ie.css" />
+  <![endif]-->
+  <link rel="stylesheet" 
+    href="./lib/leaflet/ext-sidebar/src/L.Control.Sidebar.css" />
+  <link rel="stylesheet" 
+    href="./lib/leaflet/ext-easybutton/src/easy-button.css">
+  <link rel="stylesheet" 
+    href="./css/main.css" />
+
+  <!-- ==================================================================== -->
+  <script src="./lib/jquery/2.1.4/jquery.min.js"></script>
+  <script src="./lib/bootstrap/3.3.5-dist/js/bootstrap.min.js"></script>
+  <script 
+    src="./lib/bootstrap/ext-select/dist/js/bootstrap-select.min.js"></script>
+  <script src="./lib/leaflet/1.0.0-b1/leaflet.js"></script>
+  <script src="./lib/leaflet/ext-sidebar/src/L.Control.Sidebar.js"></script>
+  <script src="./lib/leaflet/ext-easybutton/src/easy-button.js"></script>
+  <script src="./lib/leaflet/ext-leaflet-ajax/dist/leaflet.ajax.min.js"></script>
+
+  <!-- ==================================================================== -->
+  <script src="./js/classRestProperties.js"></script>
+  <script src="./js/classContentProperties.js"></script>
+  <script src="./js/classGeoServerProperties.js"></script>
+  <script src="./js/classMapProperties.js"></script>
+  <script src="./js/classLayerProperties.js"></script>
+
+  <script src="./js/actionPopup.js"></script>
+  <script src="./js/actionGeoServerLayers.js"></script>
+  <script src="./js/actionMapLoader.js"></script>
+
+</head>
+<body>
+
+  <div id="sidebar">
+    <br />
+    <div class="media">
+      <div class="media-left">
+        <a href="#">
+          <img src="./img/img-60x60.png">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><div id="toc-title"></div></h3>
+        <div id="toc-description"></div>
+      </div>
+    </div>
+    <br />
+    <div id="toc-content"></div>
+  </div>
+
+  <!-- ==================================================================== -->
+
+  <div id="map"></div>
+
+  <!-- ==================================================================== -->
+
+  <div id="popup"></div>
+  <div id="popup-content"></div>
+
+</body>
+</html>

@@ -1,0 +1,1 @@
+java -Xmx2g -jar osm2po-core-4.8.8-signed.jar prefix=fin tileSize=x,c finland-latest.osm.pbf postp.pipeOut=true log.console.to=err cmd=c | psql -q -h localhost -d postgis -U kolovsky 

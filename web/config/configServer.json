@@ -1,0 +1,11 @@
+{
+  "geoserver" : { 
+    "address" : "http://172.18.138.171/geoserver",
+    "repository" : "hamk-map-project",
+    "user" : "admin",
+    "password" : "geoserver"
+  },
+  "rest" : {
+    "address" : "http://172.18.138.171/api"
+  }
+}
