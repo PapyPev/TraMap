@@ -31,7 +31,7 @@ class Database:
         return ret
 
     def get_roads(self):
-        sql = """SELECT r.id, r.source_id, r.target_id, r.cost, r.reverse_cost, r.length, r.speed, r.type, p.pos, p.neg
+        sql = """SELECT r.id, r.source_id, r.target_id, r.cost, r.reverse_cost, r.length, r.speed, r.type, p.pos, p.neg, ST_asgeoJSON(r.geometry) as geom
             from roads as r, profile as p where ST_Intersects(geometry,%s) and r.id = p.id"""
         self.cur.execute(sql, [self.area_geometry])
         column_name = {"id": 0,
@@ -43,7 +43,8 @@ class Database:
                        "speed": 6,
                        "type": 7,
                        "vd_pos": 8,
-                       "vd_neg": 9}
+                       "vd_neg": 9,
+                       "geojson": 10}
         return (self.cur.fetchall(), column_name)
 
     def general_information(self,area_name, column):

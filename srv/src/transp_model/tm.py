@@ -5,6 +5,7 @@ import numpy as np
 import db
 from progress_bar import *
 import igraph
+import json
 
 class TransModel:
     def __init__(self):
@@ -313,11 +314,13 @@ class MyGraph:
         ig_e = [] #list of edge [(source, target), ...]
         ig_direction = [] #list of direction [True, False, ...]
         ig_id = [] #list of ID
+        ig_geojson = []
         for row in table:
             ig_e.append((self.id_to_index(row[cn["source"]]), self.id_to_index(row[cn["target"]])))
             ig_direction.append(True)
             ig_id.append(row[cn["id"]])
             self.cost.add_edge_cost(row[cn["length"]] * 1000, s.speed_cycling[row[cn["type"]]]/3.6, row[cn["vd_pos"]])
+            ig_geojson.append(json.loads(row[cn["geojson"]]))
 
 
             if row[cn["reverse_cost"]] != 1000000:
@@ -325,11 +328,13 @@ class MyGraph:
                 ig_direction.append(False)
                 ig_id.append(row[cn["id"]])
                 self.cost.add_edge_cost(row[cn["length"]] * 1000, s.speed_cycling[row[cn["type"]]]/3.6, abs(row[cn["vd_neg"]]))
+                ig_geojson.append(json.loads(row[cn["geojson"]]))
 
         self.g.add_edges(ig_e)
         self.g.es["direction"] = ig_direction
         self.g.es["traffic"] = 0
         self.g.es["id"] = ig_id
+        self.g.es["geojson"] = ig_geojson
         self.g.es["cost"] = self.cost.get_cost_list(1, 0, 0) #setting fo length cost
 
     def change_cost(self, k_length, k_time, k_cant):
@@ -370,6 +375,19 @@ class MyGraph:
         self.C = np.load("cache/C.npy")
         return self.C
 
+    def one_to_one(self,s ,t, mode = "id"):
+        path = self.g.get_shortest_paths(self.id_to_index(s), self.id_to_index(t),weights="cost",output="epath")[0]
+        #print path
+        out = []
+        dist = 0
+        time = 0
+        for i in path:
+            out.append(self.g.es[mode][i])
+            dist += self.cost.length[i]
+            time += self.cost.length[i]/float(self.cost.speed[i])
+
+        return {"distance": dist, "time": time, "geom": out}
+
 
     def find_paths(self, s, t_list):
         """
@@ -399,9 +417,10 @@ class MyGraph:
 
 if __name__ == "__main__":
     tm = TransModel()
-    delta, delta_mid = tm.trip_destination(0.05, 30)
-    print delta, delta_mid
-    tm.save_t()
-    tm.count_transport()
-    tm.save_traffic()
+    #delta, delta_mid = tm.trip_destination(0.05, 30)
+    #print delta, delta_mid
+    #tm.save_t()
+    #tm.count_transport()
+    #tm.save_traffic()
+    print tm.g.one_to_one(1096325,284099, mode="geojson")
 
