@@ -1,0 +1,10 @@
+*.qgs~
+*.qgs
+*.pyc
+srv/transp-model/.idea
+*.npy
+srv/transp-model/settings.py
+srv/transp-model/cache
+srv/data/*.csv
+srv/data/*.xls
+
