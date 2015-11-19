@@ -1,34 +1,27 @@
 __author__ = 'kolovsky'
 import psycopg2
 import numpy as np
-import settings as s
+import db_settings
+import tm_settings
 
 class Database:
     def __init__(self):
-        self.conn = psycopg2.connect(database=s.database, user=s.username, password=s.password,host=s.host)
+        self.conn = psycopg2.connect(database=db_settings.database,
+                                     user=db_settings.username,
+                                     password=db_settings.password,
+                                     host=db_settings.host,
+                                     port=db_settings.port)
         self.cur = self.conn.cursor()
+
+        # get interest area geometry
         sql = "SELECT geometry from general_area_information where name = %s"
-        self.cur.execute(sql,[s.area_name])
+        self.cur.execute(sql,[tm_settings.area_name_for_modeling])
         self.area_geometry = self.cur.fetchall()[0][0]
 
     def create_database_model(self):
         print "Implement me, please!"
+        raise RuntimeError("create_database_model: Implement me, please!")
 
-
-    def get_od(self):
-        sql = "SELECT num_of_people from zones where ST_Intersects(geometry,%s) and valid order by id"
-        self.cur.execute(sql ,[self.area_geometry])
-        out = np.array(self.cur.fetchall())
-        return out.reshape((len(out)))
-
-    def get_od_property(self, column_name):
-        sql = "SELECT "+column_name+" from zones where ST_Intersects(geometry,%s) and valid order by id"
-        self.cur.execute(sql, [self.area_geometry])
-        out = self.cur.fetchall()
-        ret = []
-        for i in xrange(0,len(out)):
-            ret.append(out[i][0])
-        return ret
 
     def get_roads(self):
         sql = """SELECT r.id, r.source_id, r.target_id, r.cost, r.reverse_cost, r.length, r.speed, r.type, p.pos, p.neg, ST_asgeoJSON(r.geometry) as geom
@@ -47,13 +40,12 @@ class Database:
                        "geojson": 10}
         return (self.cur.fetchall(), column_name)
 
-    def general_information(self,area_name, column):
+    def general_information(self, column, area_name=tm_settings.area_name_for_modeling):
         sql = "SELECT "+column+" from general_area_information where name = %s"
         self.cur.execute(sql,[area_name])
         return self.cur.fetchall()[0][0]
 
-
-    def save_traffic(self,ids,traffic, direction):
+    def save_traffic(self, ids, traffic, direction):
         sql_d = "DELETE FROM traffic where true"
         self.cur.execute(sql_d)
         sql_seq = "ALTER SEQUENCE traffic_id_seq RESTART WITH 1"
@@ -74,5 +66,28 @@ class Database:
                 if matrix[i][j] != 0 and matrix[i][j] != float("inf"):
                     self.cur.execute(sql,[zones_property_id[i], zones_property_id[j], matrix[i][j]])
         self.conn.commit()
+
+    def get_graph(self):
+        sql = """SELECT id, source_id, target_id, oneway
+            FROM roads where ST_Intersects(geometry,%s) order by id"""
+        self.cur.execute(sql, [self.area_geometry])
+
+        return self.cur.fetchall()
+
+    def get_vertex_property(self, column):
+        sql = "SELECT "+column+" FROM nodes where ST_Intersects(geometry,%s) order by id"
+        self.cur.execute(sql, [self.area_geometry])
+        return np.transpose(self.cur.fetchall()).tolist()[0]
+
+    def get_edge_property(self, column):
+        sql = "SELECT "+column+" FROM roads where ST_Intersects(geometry,%s) order by id"
+        self.cur.execute(sql, [self.area_geometry])
+        return np.transpose(self.cur.fetchall()).tolist()[0]
+
+    def get_zone_property(self, column):
+        sql = "SELECT "+column+" FROM zones where ST_Intersects(geometry,%s) order by id"
+        self.cur.execute(sql, [self.area_geometry])
+        return np.transpose(self.cur.fetchall()).tolist()[0]
+
 
 

@@ -1,39 +1,45 @@
 __author__ = 'kolovsky'
 
-import settings as s
+import tm_settings as s
 import numpy as np
 import db
 from progress_bar import *
-import igraph
-import json
+from graph import Graph
+import time
+
 
 class TransModel:
     def __init__(self):
-        #database
+        # database
         self.db = db.Database()
-        trip_per_person = self.db.general_information(s.area_name,"cycling")
+        trip_per_person = self.db.general_information("cycling")
 
         # graph
-        self.g = MyGraph()
-        table, cn = self.db.get_roads()
-        self.g.create_graph(table, cn)
+        self.g = Graph()
+        table = self.db.get_graph()
+        self.g.create_graph(table)
+        self.g.set_edge_property("length", self.db.get_edge_property("length"))
+        self.g.set_edge_property("speed", self.db.get_edge_property(s.speed))
+        self.g.set_edge_property("vd", [0]) #PROVIZORNI!!!!
+        self.g.set_edge_property("id", self.db.get_edge_property("id"))
+        print self.g.g.ecount()
+        self.g.change_cost(1, 0, 0)
 
-        self.O = np.array(map(lambda x: x*trip_per_person, self.db.get_od())) #origin zones
-        self.D = np.array(map(lambda x: x*trip_per_person, self.db.get_od())) #destination zones
+        self.O = np.array(map(lambda x: x * trip_per_person, self.db.get_zone_property("num_of_people"))) #origin zones
+        self.D = np.array(map(lambda x: x * trip_per_person, self.db.get_zone_property("num_of_people"))) #destination zones
 
         #zones property
-        self.zones_property_type = self.db.get_od_property("type")
-        self.zones_property_subtype = self.db.get_od_property("subtype")
-        self.zones_property_id = self.db.get_od_property("id")
-        self.zones_property_node_id = self.db.get_od_property("node_id")
+        self.zones_property_type = self.db.get_zone_property("type")
+        self.zones_property_subtype = self.db.get_zone_property("subtype")
+        self.zones_property_id = self.db.get_zone_property("id")
+        self.zones_property_node_id = self.db.get_zone_property("node_id")
 
         self.zones_property_age_cat = []
         for age_column in s.age_category:
-            self.zones_property_age_cat.append(self.db.get_od_property(age_column))
+            self.zones_property_age_cat.append(self.db.get_zone_property(age_column))
 
         #cost matrix
-        self.C = self.g.get_c(self.zones_property_node_id)
-        #self.C = self.g.load_c()
+        self.C = self.g.get_cost_matrix(self.zones_property_node_id)
 
         #transport matrix
         self.T = np.ndarray(shape=(self.O.size, self.D.size))
@@ -206,221 +212,36 @@ class TransModel:
         for node_id in self.zones_property_node_id:
             for cost in s.cost:
                 self.g.change_cost(cost[0], cost[1], cost[2])
-                paths = self.g.find_paths(node_id, self.zones_property_node_id)
+                paths = self.g.one_to_n(node_id, self.zones_property_node_id)
+                a = time.time()
                 j = 0
+                #print len(paths)
                 for path in paths:
+                    if len(path) != 0 and node_id == 246696:
+                        pass
+                        #print node_id, self.g.g.es["id"][path[0]], self.T[i][j], self.g.p_traffic[path[0]]
+                        #print path[0]
+                        #print len(self.g.p_traffic), len(self.g.g.es["id"])
                     for edge in path:
-                        self.g.g.es[edge]["traffic"] += (1.0/len(s.cost)) * self.T[i][j]
+                        self.g.p_traffic[edge] = self.g.p_traffic[edge] +  (1.0/len(s.cost)) * self.T[i][j]
                     j += 1
+                #print time.time() - a
             i += 1
             pb.go(i)
 
     def save_traffic(self):
-        """
-        Save traffic to database
-        :return:
-        """
         ids = self.g.g.es.get_attribute_values("id")
-        traffic = self.g.g.es.get_attribute_values("traffic")
+        traffic = self.g.p_traffic.tolist()
         direction = self.g.g.es.get_attribute_values("direction")
         self.db.save_traffic(ids, traffic, direction)
-
-class Cost(object):
-
-    def __init__(self):
-        self.speed = []
-        self.length = []
-        self.cant = []
-
-
-    def add_edge_cost(self, length, speed, cant = 0):
-        """
-
-        :param length: length in meter
-        :param speed: speed in m .s^(-1)
-        :param cant: in meter
-        :return:
-        """
-        self.speed.append(speed)
-        self.length.append(length)
-        self.cant.append(cant)
-
-    def get_cost_list(self, k_length, k_time, k_cant):
-        np_length = np.array(self.length)
-        np_speed = np.array(self.speed)
-        np_cant = np.array(self.cant)
-        out = []
-        for i in xrange(len(self.length)):
-            if np_speed[i] == 0:
-                out.append(float("inf"))
-            else:
-                c = k_length * np_length[i] + k_time * (np_length[i] / np_speed[i]) + k_cant * np_cant[i]
-                out.append(c)
-        return out
-
-
-
-class MyGraph:
-    def __init__(self):
-        self.g = igraph.Graph(directed = True)
-        self.cost = Cost()
-        self.min_vertex_id = -1
-        self.max_vertex_id = -1
-        self.max_count_vertex = 100000000  # max size of graph
-
-    def _create_vertex(self, table, cn):
-        """
-        Create vertexes
-        :param table: list of edges (list of roads)
-        :param cn: column name e.g {"source": 1, "target": 2, ...} number is index in edge,
-        This function required "source" and "target" column in cn dictionary
-        """
-        self.min_vertex_id = table[0][cn["source"]]
-        self.max_vertex_id = table[0][cn["source"]]
-        for row in table:
-            if self.min_vertex_id > row[cn["source"]]: self.min_vertex_id = row[cn["source"]]
-            if self.min_vertex_id > row[cn["target"]]: self.min_vertex_id = row[cn["target"]]
-            if self.max_vertex_id < row[cn["source"]]: self.max_vertex_id = row[cn["source"]]
-            if self.max_vertex_id < row[cn["target"]]: self.max_vertex_id = row[cn["target"]]
-
-        # check max size of graph
-        if self.max_count_vertex < self.max_vertex_id - self.min_vertex_id:
-            raise AttributeError("Too large graph")
-
-        self.g.add_vertices(int(self.max_vertex_id - self.min_vertex_id + 1))
-
-
-    def id_to_index(self, id):
-        """
-        Transform ID (node) to vertex index
-        :param id: Node ID
-        :return: vertex index
-        """
-        if id > self.max_vertex_id:
-            raise IndexError("ID %i no exist, ID must be in interval [%i, %i]" %(id,self.min_vertex_id,
-                                                                                 self.max_vertex_id))
-        return id - self.min_vertex_id
-
-    def create_graph(self, table, cn):# vyressi reverse cost i v modelu!!!
-        """
-        Create graph from list of row (edges). Column are id, cost, source, target. eg. SELECT id, cost, source, target FROM graph; in PLPython
-        :param table: list of rows (edges)
-        :param cn: dictionary of column name eg. {"id": 0, "source": 1, "target": 2, "cost":3 ,"reverse_cost": 4, "length": 5, "speed": 6}
-        number is index in edge
-        This function required column name "id", "source", "target", "length", "speed", "reverse_cost", "cant".
-        """
-        self._create_vertex(table,cn)
-
-        ig_e = [] #list of edge [(source, target), ...]
-        ig_direction = [] #list of direction [True, False, ...]
-        ig_id = [] #list of ID
-        ig_geojson = []
-        for row in table:
-            ig_e.append((self.id_to_index(row[cn["source"]]), self.id_to_index(row[cn["target"]])))
-            ig_direction.append(True)
-            ig_id.append(row[cn["id"]])
-            self.cost.add_edge_cost(row[cn["length"]] * 1000, s.speed_cycling[row[cn["type"]]]/3.6, row[cn["vd_pos"]])
-            ig_geojson.append(json.loads(row[cn["geojson"]]))
-
-
-            if row[cn["reverse_cost"]] != 1000000:
-                ig_e.append((self.id_to_index(row[cn["target"]]), self.id_to_index(row[cn["source"]])))
-                ig_direction.append(False)
-                ig_id.append(row[cn["id"]])
-                self.cost.add_edge_cost(row[cn["length"]] * 1000, s.speed_cycling[row[cn["type"]]]/3.6, abs(row[cn["vd_neg"]]))
-                ig_geojson.append(json.loads(row[cn["geojson"]]))
-
-        self.g.add_edges(ig_e)
-        self.g.es["direction"] = ig_direction
-        self.g.es["traffic"] = 0
-        self.g.es["id"] = ig_id
-        self.g.es["geojson"] = ig_geojson
-        self.g.es["cost"] = self.cost.get_cost_list(1, 0, 0) #setting fo length cost
-
-    def change_cost(self, k_length, k_time, k_cant):
-        """
-        Changing actual cost for graph.
-        Cost is computed as linear combination length, time, cant so sum of these coefficients must be 1
-        :param k_length: coefficient for length
-        :param k_time: coefficient for time
-        :param k_cant: coefficient for cant (altitude)
-        """
-        self.g.es["cost"] = self.cost.get_cost_list(k_length, k_time, k_cant)
-
-    def get_c(self, zones_propetry_node_id):
-        """
-        Create cost matrix (C)
-        :param zones_propetry_node_id: list of node_id
-        :return: C matrix
-        """
-        pb = Progress_bar(len(zones_propetry_node_id))
-        C = np.ndarray(shape=(len(zones_propetry_node_id), len(zones_propetry_node_id)))
-        i = 0
-        for zone_node_id in zones_propetry_node_id:
-            dist_map = self.g.shortest_paths_dijkstra(self.id_to_index(zone_node_id), None, "cost")[0]
-            j = 0
-            for zone_node_id_v in zones_propetry_node_id:
-                C[i][j] = dist_map[self.id_to_index(zone_node_id_v)]
-                j += 1
-            i += 1
-            pb.go(i)
-        np.save("cache/C", C)
-        return C
-
-    def load_c(self):
-        """
-        Load C matrix from cache
-        :return: C matrix
-        """
-        self.C = np.load("cache/C.npy")
-        return self.C
-
-    def one_to_one(self,s ,t, mode = "id"):
-        path = self.g.get_shortest_paths(self.id_to_index(s), self.id_to_index(t),weights="cost",output="epath")[0]
-        #print path
-        out = []
-        dist = 0
-        time = 0
-        for i in path:
-            out.append(self.g.es[mode][i])
-            dist += self.cost.length[i]
-            time += self.cost.length[i]/float(self.cost.speed[i])
-
-        return {"distance": dist, "time": time, "geom": out}
-
-
-    def find_paths(self, s, t_list):
-        """
-        Find paths from s to all vertex in t_list.
-        :param s source node
-        :param t_list list of target nodes
-        :return list of paths (paths is list of edges id)
-        """
-        ig_paths = self.g.get_shortest_paths(self.id_to_index(s), to=map(self.id_to_index, t_list), weights="cost", output="epath")
-        ig_paths_m = filter(lambda x: False if len(x) == 0 else True, ig_paths)
-
-        all_path = []
-
-        for t in map(self.id_to_index, t_list):
-            pp = 1
-            for i in xrange(len(ig_paths_m)):
-                if t == self.g.es[ig_paths_m[i][-1]].target:
-                    all_path.append(ig_paths_m[i])
-                    pp = 0
-                    break
-            if pp:
-                all_path.append([])
-        if len(all_path) != len(t_list):
-            raise RuntimeError("not corespond letgth of input and output")
-        return all_path
 
 
 if __name__ == "__main__":
     tm = TransModel()
-    #delta, delta_mid = tm.trip_destination(0.05, 30)
+    delta, delta_mid = tm.trip_destination(0.05, 30)
     #print delta, delta_mid
     #tm.save_t()
-    #tm.count_transport()
-    #tm.save_traffic()
-    print tm.g.one_to_one(1096325,284099, mode="geojson")
+    tm.count_transport()
+    tm.save_traffic()
+    #print tm.g.one_to_one(1096325,284099, mode="geojson")
 
