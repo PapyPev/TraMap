@@ -4,5 +4,5 @@
   "projection" : "epsg:4326",
   "mapbox_token" : "pk.eyJ1IjoibWFwYm94IiwiYSI6IjZjNmRjNzk3ZmE2MTcwOTEwMGY0MzU3YjUzOWFmNWZhIn0.Y8bhBaUMqFiPrDRW9hieoQ",
   "sidebar_pos" : "left",
-  "maxFeatures" : 500
+  "maxFeatures" : 5000
 }

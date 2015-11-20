@@ -48,6 +48,7 @@ function popup_getInterests() {
   var val = {};
 
   // Get JSON
+  /*
   $.ajax({
     type: 'GET',
     url: restProperties.getAddress() + '/interests',
@@ -67,6 +68,7 @@ function popup_getInterests() {
     },
     async: false
   });
+*/
 
   return val;
 } //--- popup_getInterests()

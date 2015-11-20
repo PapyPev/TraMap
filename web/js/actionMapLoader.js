@@ -6,7 +6,7 @@
 | Initialize map content and all functions for update or map actions.
 |
 | @author Pev
-| @verion 1.1.7
+| @verion 1.1.8
 |
 |------------------------------------------------------------------------------
 */
@@ -32,6 +32,12 @@ var _SRV_PROP = './config/configServer.json';
  * @type {String}
  */
 var _CON_PROP = './config/configContent.json';
+
+/**
+ * Style properties file about the Content to put on the map
+ * @type {String}
+ */
+var _STY_PROP = './config/configLayerStyle.json';
 
 // ============================================================================
 // GLOBALS
@@ -81,8 +87,45 @@ function map_refreshGeoserverLayers (mapBoundingBox) {
 
       // if it's not a Tiles layer
       if (mapLayers[i].getCategory()!='Background') {
-        mapLayers[i].getContent().refresh(url);
-      }
+
+        // Layer Style from configLayerStyle
+        var layerStyle = null;
+        if (styleProperties.getLayerStyle(mapLayers[i].getName())) {
+          layerStyle = styleProperties.getLayerStyle(mapLayers[i].getName());
+        }
+
+        // If we have a style for this layer
+        if (layerStyle !== null) {
+
+          var currentZoomMap = map.getZoom();
+
+          // Test zoom level
+          if (currentZoomMap <= layerStyle.zoom_max 
+            && currentZoomMap >= layerStyle.zoom_min) {
+
+            // If Layer already exists
+            if (map.hasLayer(mapLayers[i].getContent())) {
+              mapLayers[i].getContent().refresh(url);
+            } else {
+              map.addLayer(mapLayers[i].getContent());
+            }
+
+          } else if (map.hasLayer(mapLayers[i].getContent())){
+            map.removeLayer(mapLayers[i].getContent())
+          }
+
+        } else{
+
+          // If Layer exists
+          if (map.hasLayer(mapLayers[i].getContent())) {
+            mapLayers[i].getContent().refresh(url);
+          } else {
+            map.addLayer(mapLayers[i].getContent());
+          }
+
+        }
+
+      } // end // if it's not a Tiles layer
 
     } // end if check
   } // end for mapLayers
@@ -92,10 +135,9 @@ function map_refreshGeoserverLayers (mapBoundingBox) {
 // ----------------------------------------------------------------------------
 
 /**
- * [Load GeoServer Layers with Bounding box query]
- * @param  {Object} mapBoundingBox [description]
+ * [Load GeoServer Layers]
  */
-function map_laodGeoserverLayers (mapBoundingBox) {
+function map_laodGeoserverLayers () {
 
   // Get GeoServer Layer
   var listGeoServerLayer = [];
@@ -104,14 +146,40 @@ function map_laodGeoserverLayers (mapBoundingBox) {
     geoServerProperties.getRepository(),
     mapProperties.getProjection(),
     mapProperties.getMaxFeatures(),
-    mapBoundingBox
+    map.getBounds()
   );
 
   // Add all GeoServer Layers
   for (var i = 0; i < listGeoServerLayer.length; i++) {
     mapLayers.push(listGeoServerLayer[i]);
+
+    // Verification : if the layer is checked
     if (listGeoServerLayer[i].getCheck()) {
-      map.addLayer(listGeoServerLayer[i].getContent());
+
+      // Get style
+      var layerStyle = null;
+      if (styleProperties.getLayerStyle(listGeoServerLayer[i].name)) {
+        layerStyle = styleProperties.getLayerStyle(listGeoServerLayer[i].name);
+      }
+
+      // If style exists
+      if (layerStyle !== null) {
+        console.log("not null", listGeoServerLayer[i].name)
+
+        var currentZoomMap = map.getZoom();
+        
+        // Test zoom level
+        if (currentZoomMap <= layerStyle.zoom_max 
+          && currentZoomMap >= layerStyle.zoom_min) {
+          console.log("with zoom ", listGeoServerLayer[i].name)
+          map.addLayer(listGeoServerLayer[i].getContent());
+        }
+
+      } else{
+        console.log("no style: ", listGeoServerLayer[i].name)
+        map.addLayer(listGeoServerLayer[i].getContent());
+      }
+
     }
   }
 
@@ -275,9 +343,9 @@ function map_loadTiles () {
   var bgLightM = new LayerProperties("Radio", "Background", 
     "bgLight", "MapBox : Light", 0, false, "", bgLight);
   var bgDarktM = new LayerProperties("Radio", "Background", 
-    "bgDark", "MapBox : Dark", 1, false, "", bgDark);
+    "bgDark", "MapBox : Dark", 1, true, "", bgDark);
   var bgStreetM = new LayerProperties("Radio", "Background", 
-    "bgStreet", "MapBox : Street", 2, true, "", bgStreet);
+    "bgStreet", "MapBox : Street", 2, false, "", bgStreet);
 
   // Add Tiles to default loaded map layers
   listOfLayers.push(bgLightM, bgDarktM, bgStreetM);
@@ -294,11 +362,12 @@ function map_loadTiles () {
  */
 function map_init () {
 
-  //---------- Load Layers, GeoServer, Content Properties
+  //---------- Load Layers, GeoServer, Content, Layers Style Properties
   mapProperties = new MapProperties('map', _MAP_PROP);
   geoServerProperties = new GeoServerProperties(_SRV_PROP);
   contentProperties = new ContentProperties(_CON_PROP);
   restProperties = new RestProperties(_SRV_PROP);
+  styleProperties = new LayerStyleProperties(_STY_PROP);
 
   //---------- Load Default map
   map = L.map('map', {
@@ -323,7 +392,7 @@ function map_init () {
   //sidebar.show();
 
   //---------- Load Default GeoServer layer 
-  map_laodGeoserverLayers(map.getBounds());
+  map_laodGeoserverLayers();
 
   //---------- Load TOC
   map_loadHtmlTOC();

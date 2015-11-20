@@ -1,0 +1,382 @@
+
+{
+  "layers": [
+
+    {
+      "alias": "Motoway",
+      "name": "roads_motorway",
+      "attribute_value": "type",
+      "attribute_alias": "name",
+      "popup_activate": false,
+      "visible": false,
+      "type": "line",
+      "filters": false,
+      "filters_type": "",
+      "zoom_min": 16,
+      "zoom_max": 12,
+      "styles": [
+        {
+          "color": "red",
+          "weight": 2,
+          "opacity": 0.5
+        }
+      ]
+    },
+
+    {
+      "alias": "Primary",
+      "name": "roads_primary",
+      "attribute_value": "type",
+      "attribute_alias": "name",
+      "popup_activate": false,
+      "visible": false,
+      "type": "line",
+      "filters": false,
+      "filters_type": "",
+      "zoom_min": 16,
+      "zoom_max": 12,
+      "styles": [
+        {
+          "color": "orange",
+          "weight": 1,
+          "opacity": 0.5
+        }
+      ]
+    },
+
+    {
+      "alias": "Truck",
+      "name": "roads_truck",
+      "attribute_value": "type",
+      "attribute_alias": "name",
+      "popup_activate": false,
+      "visible": false,
+      "type": "line",
+      "filters": false,
+      "filters_type": "",
+      "zoom_min": 16,
+      "zoom_max": 12,
+      "styles": [
+        {
+          "color": "yellow",
+          "weight": 0.5,
+          "opacity": 0.5
+        }
+      ]
+    },
+
+    {
+      "alias": "Amenities",
+      "name": "osm_amenities",
+      "attribute_value": "type",
+      "attribute_alias": "name",
+      "popup_activate": true,
+      "visible": true,
+      "type": "Point",
+      "filters": true,
+      "filters_type": "key",
+      "zoom_min": 14,
+      "zoom_max": 18,
+      "styles": [
+        {
+          "filter": "bus_stop",
+          "icon_url": "img/icon-pack/mapsmarker/enable/bus_stop.png",
+          "icon_size": [22,22],
+          "icon_anchor": [17,35],
+          "icon_popanchor": [0,-35]
+        },
+        {
+          "filter": "fire_station",
+          "icon_url": "img/icon-pack/mapsmarker/enable/fire_station.png",
+          "icon_size": [22,22],
+          "icon_anchor": [17,35],
+          "icon_popanchor": [0,-35]
+        },
+        {
+          "filter": "fuel",
+          "icon_url": "img/icon-pack/mapsmarker/enable/fuel.png",
+          "icon_size": [22,22],
+          "icon_anchor": [17,35],
+          "icon_popanchor": [0,-35]
+        },
+        {
+          "filter": "hospital",
+          "icon_url": "img/icon-pack/mapsmarker/enable/hospital.png",
+          "icon_size": [22,22],
+          "icon_anchor": [17,35],
+          "icon_popanchor": [0,-35]
+        },
+        {
+          "filter": "police",
+          "icon_url": "img/icon-pack/mapsmarker/enable/police.png",
+          "icon_size": [22,22],
+          "icon_anchor": [17,35],
+          "icon_popanchor": [0,-35]
+        },
+        {
+          "filter": "postal",
+          "icon_url": "img/icon-pack/mapsmarker/enable/postal.png",
+          "icon_size": [22,22],
+          "icon_anchor": [17,35],
+          "icon_popanchor": [0,-35]
+        },
+        {
+          "filter": "school",
+          "icon_url": "img/icon-pack/mapsmarker/enable/school.png",
+          "icon_size": [22,22],
+          "icon_anchor": [17,35],
+          "icon_popanchor": [0,-35]
+        },
+        {
+          "filter": "townhall",
+          "icon_url": "img/icon-pack/mapsmarker/enable/townhall.png",
+          "icon_size": [22,22],
+          "icon_anchor": [17,35],
+          "icon_popanchor": [0,-35]
+        },
+        {
+          "filter": "university",
+          "icon_url": "img/icon-pack/mapsmarker/enable/university.png",
+          "icon_size": [22,22],
+          "icon_anchor": [17,35],
+          "icon_popanchor": [0,-35]
+        }
+      ]
+    },
+
+    {
+      "alias": "Transport Points",
+      "name": "osm_transport_points",
+      "attribute_value": "type",
+      "attribute_alias": "name",
+      "popup_activate": true,
+      "visible": true,
+      "type": "Point",
+      "filters": true,
+      "filters_type": "key",
+      "zoom_min": 14,
+      "zoom_max": 18,
+      "styles": [
+        {
+          "filter": "motorway_junction",
+          "icon_url": "img/icon-pack/mapsmarker/enable/motorway_junction.png",
+          "icon_size": [22,22],
+          "icon_anchor": [17,35],
+          "icon_popanchor": [0,-35]
+        },
+        {
+          "filter": "helipad",
+          "icon_url": "img/icon-pack/mapsmarker/enable/helipad.png",
+          "icon_size": [22,22],
+          "icon_anchor": [17,35],
+          "icon_popanchor": [0,-35]
+        },
+        {
+          "filter": "subway_entrance",
+          "icon_url": "img/icon-pack/mapsmarker/enable/subway_entrance.png",
+          "icon_size": [22,22],
+          "icon_anchor": [17,35],
+          "icon_popanchor": [0,-35]
+        },
+        {
+          "filter": "aerodrome",
+          "icon_url": "img/icon-pack/mapsmarker/enable/aerodrome.png",
+          "icon_size": [22,22],
+          "icon_anchor": [17,35],
+          "icon_popanchor": [0,-35]
+        },
+        {
+          "filter": "bus_stop",
+          "icon_url": "img/icon-pack/mapsmarker/enable/bus_stop.png",
+          "icon_size": [22,22],
+          "icon_anchor": [17,35],
+          "icon_popanchor": [0,-35]
+        },
+        {
+          "filter": "turning_circle",
+          "icon_url": "img/icon-pack/mapsmarker/enable/turning_circle.png",
+          "icon_size": [22,22],
+          "icon_anchor": [17,35],
+          "icon_popanchor": [0,-35]
+        },
+        {
+          "filter": "level_crossing",
+          "icon_url": "img/icon-pack/mapsmarker/enable/level_crossing.png",
+          "icon_size": [22,22],
+          "icon_anchor": [17,35],
+          "icon_popanchor": [0,-35]
+        },
+        {
+          "filter": "station",
+          "icon_url": "img/icon-pack/mapsmarker/enable/station.png",
+          "icon_size": [22,22],
+          "icon_anchor": [17,35],
+          "icon_popanchor": [0,-35]
+        },
+        {
+          "filter": "tram_stop",
+          "icon_url": "img/icon-pack/mapsmarker/enable/tram_stop.png",
+          "icon_size": [22,22],
+          "icon_anchor": [17,35],
+          "icon_popanchor": [0,-35]
+        },
+        {
+          "filter": "terminal",
+          "icon_url": "img/icon-pack/mapsmarker/enable/terminal.png",
+          "icon_size": [22,22],
+          "icon_anchor": [17,35],
+          "icon_popanchor": [0,-35]
+        },
+        {
+          "filter": "halt",
+          "icon_url": "img/icon-pack/mapsmarker/enable/halt.png",
+          "icon_size": [22,22],
+          "icon_anchor": [17,35],
+          "icon_popanchor": [0,-35]
+        },
+        {
+          "filter": "gate",
+          "icon_url": "img/icon-pack/mapsmarker/enable/gate.png",
+          "icon_size": [22,22],
+          "icon_anchor": [17,35],
+          "icon_popanchor": [0,-35]
+        },
+        {
+          "filter": "crossing",
+          "icon_url": "img/icon-pack/mapsmarker/enable/crossing.png",
+          "icon_size": [22,22],
+          "icon_anchor": [17,35],
+          "icon_popanchor": [0,-35]
+        }
+      ]
+    },
+
+    {
+      "alias": "Traffic bicycle",
+      "name": "traffic",
+      "attribute_value": "traffic",
+      "attribute_alias": "traffic",
+      "popup_activate": true,
+      "visible": true,
+      "type": "Line",
+      "filters": true,
+      "filters_type": "bounds",
+      "zoom_min": 15,
+      "zoom_max": 17,
+      "styles": [
+        {
+          "value_min": 0.0,
+          "value_max": 0.5,
+          "color": "#1a9641",
+          "weight": 1,
+          "opacity": 0.5
+        },
+        {
+          "value_min": 0.5,
+          "value_max": 1.2,
+          "color": "#3fa74b",
+          "weight": 2,
+          "opacity": 0.5
+        },
+        {
+          "value_min": 1.2,
+          "value_max": 1.9,
+          "color": "#64b956",
+          "weight": 3,
+          "opacity": 0.5
+        },
+        {
+          "value_min": 1.9,
+          "value_max": 3.1,
+          "color": "#89cb61",
+          "weight": 4,
+          "opacity": 0.5
+        },
+        {
+          "value_min": 3.1,
+          "value_max": 4.6,
+          "color": "#abdb6f",
+          "weight": 5,
+          "opacity": 0.5
+        },
+        {
+          "value_min": 4.6,
+          "value_max": 6.4,
+          "color": "#c3e586",
+          "weight": 6,
+          "opacity": 0.5
+        },
+        {
+          "value_min": 6.4,
+          "value_max": 8.4,
+          "color": "#dbef9d",
+          "weight": 7,
+          "opacity": 0.5
+        },
+        {
+          "value_min": 8.4,
+          "value_max": 10.4,
+          "color": "#f3f9b4",
+          "weight": 8,
+          "opacity": 0.5
+        },
+        {
+          "value_min": 10.4,
+          "value_max": 12.5,
+          "color": "#fef4b3",
+          "weight": 9,
+          "opacity": 0.5
+        },
+        {
+          "value_min": 12.5,
+          "value_max": 15.5,
+          "color": "#fede9a",
+          "weight": 10,
+          "opacity": 0.5
+        },
+        {
+          "value_min": 15.5,
+          "value_max": 22.4,
+          "color": "#fdc980",
+          "weight": 11,
+          "opacity": 0.5
+        },
+        {
+          "value_min": 22.4,
+          "value_max": 29.2,
+          "color": "#fdb367",
+          "weight": 12,
+          "opacity": 0.5
+        },
+        {
+          "value_min": 29.2,
+          "value_max": 35.0,
+          "color": "#f59053",
+          "weight": 13,
+          "opacity": 0.5
+        },
+        {
+          "value_min": 35.0,
+          "value_max": 38.0,
+          "color": "#eb6840",
+          "weight": 14,
+          "opacity": 0.5
+        },
+        {
+          "value_min": 38.0,
+          "value_max": 52.2,
+          "color": "#e1402e",
+          "weight": 15,
+          "opacity": 0.5
+        },
+        {
+          "value_min": 52.2,
+          "value_max": 65.0,
+          "color": "#d7191c",
+          "weight": 16,
+          "opacity": 0.5
+        }
+      ]
+    }
+  ]
+}
