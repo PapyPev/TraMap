@@ -1,3 +1,9 @@
+*.out
+*.lot
+*.lof
+*.ist
+*.glo
+*.acn
 *.toc
 *.log
 *.aux
