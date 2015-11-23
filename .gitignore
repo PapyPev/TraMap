@@ -18,4 +18,4 @@ srv/src/transp_model/cache
 srv/data/*.csv
 srv/data/*.xls
 srv/src/transp_model/db_settings.py
-
+TSW*
