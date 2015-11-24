@@ -68,7 +68,6 @@ En progress :
     <li><a href="http://silviomoreto.github.io/bootstrap-select/">Extension - Select</a></li>
   </ul>
   <li><a href="https://cordova.apache.org/">Cordova</a></li>
-  <li><a href="https://github.com/documentationjs/documentation">Documentation (JS Doc library)</a></li>
 </ul>
 
 ### Tools used
