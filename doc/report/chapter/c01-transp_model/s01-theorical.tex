@@ -1,4 +1,10 @@
 \section{Transportation model}
+Traditional transportation modelling have a several independent step (e.g trip generation, trip destination, ...). Our implementation of transportation modelling consist from 3 steps.
+\begin{itemize}
+\item[ ] \textbf{trip generation} - I this part we want to determine number of trip origin, destination in zones. This step is depend on data (e.g demographic data, socio-economic data, weather, local habits, ...). Quality of model depend a lot on these data.
+\item[ ] \textbf{trip destination} - In this section we want determine \textit{transportation matrix} $T$ (OD matrix). It say how many people travel from zone $i$ to zone $j$. For it was used Gravity model.
+\item[ ] \textbf{counting traffic} - This is last step.  We compute traffic for every road link (edge of graph).
+\end{itemize}
 In upcoming section following expressions will be used:
 
 \begin{tabular}{ll}

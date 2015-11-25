@@ -131,8 +131,8 @@ class Graph:
         time = 0
         for i in path:
             out.append(self.g.es[output][i])
-            dist += self.g.es["length"][i]
-            time += self.g.es["length"][i]/float(self.g.es["speed"][i])
+            dist += self.p_length[i]
+            time += self.p_length[i]/float(self.p_speed[i])
 
         return {"distance": dist, "time": time, "features": out}
 

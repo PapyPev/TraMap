@@ -6,6 +6,7 @@ import db
 from progress_bar import *
 from graph import Graph
 import time
+import json
 
 
 class TransModel:
@@ -22,7 +23,8 @@ class TransModel:
         self.g.set_edge_property("speed", self.db.get_edge_property(s.speed))
         self.g.set_edge_property("vd", [0]) #PROVIZORNI!!!!
         self.g.set_edge_property("id", self.db.get_edge_property("id"))
-        print self.g.g.ecount()
+        self.g.set_edge_property("geometry", map(lambda x: json.loads(x), self.db.get_edge_property("ST_asgeojson(geometry)")))
+        #print self.g.g.ecount()
         self.g.change_cost(1, 0, 0)
 
         self.O = np.array(map(lambda x: x * trip_per_person, self.db.get_zone_property("num_of_people"))) #origin zones
@@ -39,7 +41,7 @@ class TransModel:
             self.zones_property_age_cat.append(self.db.get_zone_property(age_column))
 
         #cost matrix
-        self.C = self.g.get_cost_matrix(self.zones_property_node_id)
+        self.C = None
 
         #transport matrix
         self.T = np.ndarray(shape=(self.O.size, self.D.size))
@@ -142,6 +144,7 @@ class TransModel:
         return Tn
 
     def trip_destination(self, maximum_delta, maximum_iterations):
+        self.C = self.g.get_cost_matrix(self.zones_property_node_id)
 
         self.T = self._insert_to_T(self._model)
 

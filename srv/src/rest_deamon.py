@@ -25,15 +25,17 @@ dbpool = psycopg2.pool.SimpleConnectionPool(1, 10, database=s.database, user=s.u
 
 app = Flask(__name__)
 
+model = transp_model.tm.TransModel()
+
 def XHRResponse(data, mimetype="application/html"):
     return Response(data, headers={"Access-Control-Allow-Origin": "*"}, mimetype=mimetype)
 
 @app.route("/")
 def api():
     get = dict(request.args)
-    return XHRResponse("Running!" + str(get))
+    return "Running!" + str(get)
 
-@app.route("/")
+@app.route("/aaa")
 def rest_interests():
     """
     Return a json object with status and all interests by tables
@@ -208,7 +210,7 @@ def rest_interests():
     # Prepare the JSON object
     data['status'] = status
     data['result'] = result
-    json_data = json.loads(json.dumps(data))
+    json_data = json.dumps(data)
 
     # Return the json object
     return json_data
@@ -248,23 +250,30 @@ def rest_shortestPath():
     }
     """
     get = dict(request.args)
-    x1 =  get["lat1"]
-    y1 =  get["lon1"]
-    x2 =  get["lat2"]
-    y2 =  get["lon2"]
+    #return get["lat1"][0]
+    x1 =  float(get["lat1"][0])
+    y1 =  float(get["lon1"][0])
+    x2 =  float(get["lat2"][0])
+    y2 =  float(get["lon2"][0])
 
     con = dbpool.getconn()
     cur = con.cursor()
 
     nn = """SELECT id
             FROM nodes WHERE
-            ST_Dwithin(ST_transform(geometry,3067), st_setsrid('POINT(382289.1635 6722782.235)'::geometry,3067) ,100)
-            ORDER BY ST_Distance(ST_transform(geometry,3067), st_setsrid('POINT(382289.1635 6722782.235)'::geometry, 3067))
+            ST_Dwithin(geometry, ST_transform(st_setsrid('POINT(%s %s)'::geometry,4326),3857) ,100)
+            ORDER BY ST_Distance(geometry, ST_transform(st_setsrid('POINT(%s %s)'::geometry,4326),3857))
             limit 1"""
-    cur.execute(nn,)
+    cur.execute(nn,[x1,y1,x1,y1])
+    id1 = cur.fetchall()[0][0]
+
+    cur.execute(nn,[x2,y2,x2,y2])
+    id2 = cur.fetchall()[0][0]
+
+    res = model.g.one_to_one(id1, id2, output="geometry")
 
 
-    return XHRResponse(json.dumps({}), mimetype="application/json")
+    return XHRResponse(json.dumps({"status":"ok","result": res}), mimetype="application/json")
 
 
 if __name__ == "__main__":
