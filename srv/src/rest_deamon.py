@@ -18,7 +18,7 @@ from flask import Flask, Response, request
 import json
 import psycopg2.pool
 import transp_model
-from transp_model import s
+from transp_model import db_settings as s
 
 dbpool = psycopg2.pool.SimpleConnectionPool(1, 10, database=s.database, user=s.username, password=s.password,host=s.host)
 
