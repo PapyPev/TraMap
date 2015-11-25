@@ -16,7 +16,6 @@ __email__ = "pev.arfan@gmail.com"
 
 from flask import Flask, Response, request
 import json
-import database
 import psycopg2.pool
 import transp_model
 from transp_model import s
@@ -30,12 +29,18 @@ model = transp_model.tm.TransModel()
 def XHRResponse(data, mimetype="application/html"):
     return Response(data, headers={"Access-Control-Allow-Origin": "*"}, mimetype=mimetype)
 
-@app.route("/")
+@app.route("/api")
 def api():
-    get = dict(request.args)
-    return "Running!" + str(get)
+    out = "<h2>Api info for TraMap</h2>"""
+    out += "<b>/api/interests</b>  - return type for tables (don't need any parameters)"
+    out += """<br><b>/api/ssp</b> - return Shortest path from A to B e.g
+        <a href="http://localhost:8888/api/ssp?lon1=60.61663&lat1=24.87078&lon2=60.63003&lat2=24.85747">
+            http://localhost:8888/api/ssp?lon1=60.61663&lat1=24.87078&lon2=60.63003&lat2=24.85747
+        </a>"""
 
-@app.route("/aaa")
+    return out
+
+@app.route("/api/interests")
 def rest_interests():
     """
     Return a json object with status and all interests by tables
@@ -66,189 +71,35 @@ def rest_interests():
       ]
     }
     """
+    con = dbpool.getconn()
+    cur = con.cursor()
+    tables = ["import.osm_amenities", "import.osm_shop", "import.osm_transport_points"]
+    sql = "SELECT type from %s group by type"
 
-    ### ---------- TABLES LISTS ----------
+    res = []
+    for table in tables:
+        sql_f = sql %(table)
+        cur.execute(sql_f)
+        qr = cur.fetchall()
+        types = []
+        for t in qr:
+            types.append(t[0])
+        res.append({"table": table, "interests": types})
 
-    tablesIgnore = [
-        'general_area_information',
-        'geography_columns',
-        'geometry_columns',
-        'spatial_ref_sys',
-        'raster_columns',
-        'raster_overviews',
-        'traffic',
-        'traffic_geometry',
-        'type_roads_value',
-        'nodes',
-        'od_pairs',
-        'osm_buildings',
-        'osm_amenities',
-        'osm_transport_points'
-    ]
+    # only dor table "roads"
+    cur.execute("SELECT name FROM type_roads_value")
+    qr = cur.fetchall()
+    types = []
+    for t in qr:
+        types.append(t[0])
+    res.append({"table": "roads", "interests": types})
+    # / only dor table "roads"
 
-    tablesInner = [
-    'roads'
-    ]
-
-    ### ---------- INIT RETURNED OBJECT ----------
-
-    # REST variables
-    status = 'nok'
-    result = []
-
-    # JSON object
-    data = {}
-    data['status'] = status
-    data['result'] = result
-
-    ### ---------- DATABASE CONNEXION ----------
-
-    try:
-        db = database.Database()
-
-        # Connexion to the database
-        db._connect()
+    return XHRResponse(json.dumps({"status": "ok", "result": res }), mimetype="application/json")
 
 
-        ### ---------- GET ALL TABLES ----------
-
-        try:
-
-          # Prepare the SQL query
-          tablesSQL = "SELECT table_name " \
-              "FROM information_schema.tables " \
-              "WHERE table_schema='public' " \
-              "ORDER BY table_name ASC"
-
-          # Execute the query
-          tablesResult = db._execute(tablesSQL)
-
-          # Prepare the list of table
-          tablesList = []
-
-          # Save the result on a list of elements
-          for t in tablesResult:
-            if not t[0] in tablesIgnore:
-              tablesList.append(t[0])
-
-
-          ### ---------- GET TYPE ----------
-
-          try:
-
-            # For each table get interests
-            for tableName in tablesList:
-
-              # Prepare object list
-              interestsByTable = {}
-              interestsByTable['table'] = tableName
-              interests = []
-              interestsByTable['interests'] = interests
-
-
-              ### ---------- TREATMENT MATCHING ----------
-
-              # Init and refresh
-              interestsSQL = ''
-
-              try:
-
-                # Special treatment
-                if tableName in tablesInner:
-
-                  # Get all type from tableName with inner join
-                  interestsSQL = """SELECT DISTINCT name as type
-                    FROM {}, type_{}_value
-                    WHERE {}.type = type_{}_value.id""".format(
-                      tableName, tableName, tableName, tableName)
-
-                # No special treatment
-                else:
-
-                  # Get all type from tableName
-                  interestsSQL = 'SELECT DISTINCT type FROM {}'.format(tableName)
-
-                # Execute the query
-                interestsResult = db._execute(interestsSQL)
-
-                # Save interests on intersts list
-                for i in interestsResult:
-                  interests.append(i[0])
-
-                ### ---------- SAVE INTERESTS ON JSON OBJECT ----------
-                interestsByTable['interests'] = interests
-
-                ### ---------- SAVE TABLE INTERESTS ----------
-                result.append(interestsByTable)
-
-              except Exception, e:
-                result = ['Error: SQL treatment matching. Details: {}'.format(e)]
-
-            # End - for tableName in tablesList
-
-            ### ---------- UPDATE STATUS ----------
-            status = 'ok'
-
-          # Get Type for all tables
-          except Exception, e:
-            result = ['Error: SQL get type table. Details: {}'.format(e)]
-
-        # Get all tables error
-        except Exception, e:
-          result = ['Error: SQL get all tables. Details: {}'.format(e)]
-
-    # Database connexion error
-    except Exception, e:
-        result = ['Error: Database connexion failed. Details: {}'.format(e)]
-
-    finally:
-        pass
-
-
-    ### ---------- RETURN OBJECT ----------
-
-    # Prepare the JSON object
-    data['status'] = status
-    data['result'] = result
-    json_data = json.dumps(data)
-
-    # Return the json object
-    return json_data
-
-@app.route('/ssp', methods=["GET", "POST"])
+@app.route('/api/ssp', methods=["GET", "POST"])
 def rest_shortestPath():
-    """
-    Return a JSON object with the geometry path shortestpath,
-    time (in seconds) and distance (in meters)
-
-    :Parameters:
-      lat1
-        Latitude of the first point (start)
-      lon1
-        Longitude of the first point (start)
-      lat2
-        Latitude of the second point (arrival)
-      lon2
-        Longitude of the second point (arrival)
-
-    :Example:
-    #>>> rest_shortestPath(60.639481, 24.851273, 60.631668, 24.858296)
-    URL : http://localhost:8082/api/shortestPath?lat1=60.639481&lon1=24.851273&lat2=60.631668&lon2=24.858296
-
-    :Result:
-    {
-      "status":"ok,
-      "result":
-      {
-        "distance":10,
-        "time":5400,
-        "feature": [
-          {geometry object},
-          {geometry object}
-        ]
-      }
-    }
-    """
     get = dict(request.args)
     #return get["lat1"][0]
     x1 =  float(get["lat1"][0])
@@ -269,8 +120,10 @@ def rest_shortestPath():
 
     cur.execute(nn,[x2,y2,x2,y2])
     id2 = cur.fetchall()[0][0]
+    dbpool.putconn(con)
 
     res = model.g.one_to_one(id1, id2, output="geometry")
+
 
 
     return XHRResponse(json.dumps({"status":"ok","result": res}), mimetype="application/json")
