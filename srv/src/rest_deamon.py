@@ -76,17 +76,17 @@ def rest_interests():
 def rest_shortest_path():
     get = dict(request.args)
     #return get["lat1"][0]
-    x1 =  float(get["lat1"][0])
-    y1 =  float(get["lon1"][0])
-    x2 =  float(get["lat2"][0])
-    y2 =  float(get["lon2"][0])
+    y1 =  float(get["lat1"][0])
+    x1 =  float(get["lon1"][0])
+    y2 =  float(get["lat2"][0])
+    x2 =  float(get["lon2"][0])
 
     con = dbpool.getconn()
     cur = con.cursor()
 
     nn = """SELECT id
             FROM nodes WHERE
-            ST_Dwithin(geometry, ST_transform(st_setsrid('POINT(%s %s)'::geometry,4326),3857) ,100)
+            ST_Dwithin(geometry, ST_transform(st_setsrid('POINT(%s %s)'::geometry,4326),3857) ,1000)
             ORDER BY ST_Distance(geometry, ST_transform(st_setsrid('POINT(%s %s)'::geometry,4326),3857))
             limit 1"""
     cur.execute(nn,[x1,y1,x1,y1])
