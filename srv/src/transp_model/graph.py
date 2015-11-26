@@ -20,6 +20,10 @@ class Graph:
 
 
     def _create_vertex(self, table):
+        """
+        :param table:
+        :return:
+        """
         self.min_vertex_id = table[0][1]
         self.max_vertex_id = table[0][1]
         for row in table:

@@ -45,35 +45,6 @@ def api():
 
 @app.route("/api/interests")
 def rest_interests():
-    """
-    Return a json object with status and all interests by tables
-
-    :Example:
-    >>> rest_interests()
-    URL : http://localhost:8082/api/interests
-
-    :Result:
-    {
-      "status" : "ok",
-      "result" : [
-        {
-          "table" : "roads",
-          "interests" : [
-            "motorway",
-            "footway",
-            "cycleway",
-            "..."
-          ]
-        },
-        {
-          "table" : "osm_building",
-          "interests" : [
-            {"..."}
-          ]
-        }
-      ]
-    }
-    """
     con = dbpool.getconn()
     cur = con.cursor()
     tables = ["osm_amenities", "osm_transport_points"]

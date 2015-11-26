@@ -18,7 +18,7 @@ class TransModel:
     def __init__(self):
         # database
         self.db = db.Database()
-        trip_per_person = self.db.general_information("cycling")
+        trip_per_person = self.db.general_information(s.transpotation_type)
 
         # graph
         self.g = Graph()
@@ -28,8 +28,7 @@ class TransModel:
         self.g.set_edge_property("speed", self.db.get_edge_property(s.speed))
         self.g.set_edge_property("vd", [0]) #PROVIZORNI!!!!
         self.g.set_edge_property("id", self.db.get_edge_property("id"))
-        self.g.set_edge_property("geometry", map(lambda x: json.loads(x), self.db.get_edge_property("ST_asgeojson(geometry)")))
-        #print self.g.g.ecount()
+        self.g.set_edge_property("geometry", map(lambda x: json.loads(x), self.db.get_edge_property("ST_asgeojson(ST_transform(geometry,4326))")))
         self.g.change_cost(1, 0, 0)
 
         self.O = np.array(map(lambda x: x * trip_per_person, self.db.get_zone_property("num_of_people"))) #origin zones
@@ -52,6 +51,8 @@ class TransModel:
         self.T = np.ndarray(shape=(self.O.size, self.D.size))
 
         self.prepare_od() #only for testing
+
+        # for computing info
         self.compute_info = ComputeInfo()
 
 
@@ -150,6 +151,11 @@ class TransModel:
         return Tn
 
     def trip_destination(self, maximum_delta, maximum_iterations):
+        """
+        :param maximum_delta: maximum error in balancing matrix
+        :param maximum_iterations: maximum number of iteration in balancing matrix
+        :return: (delta, average_delta) error in balancing matrix
+        """
         self.C = self.g.get_cost_matrix(self.zones_property_node_id)
 
         self.T = self._insert_to_T(self._model)
@@ -203,7 +209,7 @@ class TransModel:
 
     def save_t(self):
         """
-        Save T matrix to database.
+        Save T matrix to database (table OD_pairs).
         :return:
         """
         self.db.save_t(self.T, self.zones_property_id)
@@ -211,10 +217,6 @@ class TransModel:
 
     def count_transport(self): # je treba jeste dudelat distribuci cen!!!!
         """
-        Count traffic for roads.
-        :param num_multi_path: how many shortest path will computed for one OD pair. For searching will used different
-         cost.
-        :return:
         """
         pb = Progress_bar(len(self.zones_property_node_id))
         i = 0
@@ -239,6 +241,9 @@ class TransModel:
             self.compute_info.progress = pb.go(i)
 
     def save_traffic(self):
+        """
+        Save traffic to database table "traffic"
+        """
         ids = self.g.g.es.get_attribute_values("id")
         traffic = self.g.p_traffic.tolist()
         direction = self.g.g.es.get_attribute_values("direction")
