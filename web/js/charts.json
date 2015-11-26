@@ -1,0 +1,13 @@
+{
+  "status": "ok",
+  "result": [
+    {
+      "id": 1,
+      "alias": "beers"
+    },
+    {
+      "id": 2,
+      "alias": "other"
+    }
+  ]
+}
