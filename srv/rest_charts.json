@@ -1,0 +1,105 @@
+/* 
+
+  List of stats
+  - Number of roads per type (Simple Column Chart)
+  - Number of point of interests by table (Donut chart)
+
+*/
+
+
+
+// Simple Column Chart
+// ======================================================
+ 
+ {
+  "status": "ok",
+  "results": [
+
+    {
+      "title": "Beers in Country",
+      "alias": "Country",
+      "value": "nb of visits",
+      "data": [
+        {
+          "alias": "USA",
+          "value": 2025
+        }, {
+          "alias": "China",
+          "value": 1882
+        }, {
+          "alias": "Japan",
+          "value": 1809
+        }, {
+          "alias": "Germany",
+          "value": 1322
+        }, {
+          "alias": "UK",
+          "value": 1122
+        }, {
+          "alias": "France",
+          "value": 1114
+        }, {
+          "alias": "India",
+          "value": 984
+        }, {
+          "alias": "Spain",
+          "value": 711
+        }
+      ]
+    }
+
+  ]
+ }
+
+
+
+// Donut chart
+// ======================================================
+
+{
+  "status": "ok",
+  "results": [
+
+    {
+      "title": "Beers in Country",
+      "alias": "Country",
+      "value": "nb of beers",
+      "data": [
+        {
+          "alias": "Czech Republic",
+          "value": 301.90
+        }, 
+        {
+          "alias": "Ireland",
+          "value": 201.10
+        }, 
+        {
+          "alias": "Germany",
+          "value": 165.80
+        }, 
+        {
+          "alias": "Australia",
+          "value": 139.90
+        }, 
+        {
+          "alias": "Austria",
+          "value": 128.30
+        }, 
+        {
+          "alias": "UK",
+          "value": 99.00
+        }, 
+        {
+          "alias": "Belgium",
+          "value": 60.00
+        }
+      ]
+    }
+
+  ]
+}
+
+
+
+
+
