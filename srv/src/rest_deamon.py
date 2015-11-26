@@ -19,6 +19,7 @@ import json
 import psycopg2.pool
 import transp_model
 from transp_model import db_settings as s
+import thread
 
 dbpool = psycopg2.pool.SimpleConnectionPool(1, 10, database=s.database, user=s.username, password=s.password,host=s.host)
 
@@ -34,9 +35,11 @@ def api():
     out = "<h2>Api info for TraMap</h2>"""
     out += "<b>/api/interests</b>  - return type for tables (don't need any parameters)"
     out += """<br><b>/api/ssp</b> - return Shortest path from A to B e.g
-        <a href="http://localhost:8888/api/ssp?lon1=60.61663&lat1=24.87078&lon2=60.63003&lat2=24.85747">
-            http://localhost:8888/api/ssp?lon1=60.61663&lat1=24.87078&lon2=60.63003&lat2=24.85747
+        <a href="http://localhost:8082/api/ssp?lon1=60.61663&lat1=24.87078&lon2=60.63003&lat2=24.85747">
+            http://localhost:8082/api/ssp?lon1=60.61663&lat1=24.87078&lon2=60.63003&lat2=24.85747
         </a>"""
+    out += "<br><b>/api/compute_traffic</b> - start compute traffic (return info about start compute)"
+    out += "<br><b>/api/compute_traffic_progress</b> - progress for compute traffic e.g {\"status\": \"ok\", \"result\": {\"progress\": 87, \"isrun\": true}}"
 
     return out
 
@@ -73,7 +76,7 @@ def rest_interests():
     """
     con = dbpool.getconn()
     cur = con.cursor()
-    tables = ["import.osm_amenities", "import.osm_shop", "import.osm_transport_points"]
+    tables = ["osm_amenities", "osm_transport_points"]
     sql = "SELECT type from %s group by type"
 
     res = []
@@ -99,7 +102,7 @@ def rest_interests():
 
 
 @app.route('/api/ssp', methods=["GET", "POST"])
-def rest_shortestPath():
+def rest_shortest_path():
     get = dict(request.args)
     #return get["lat1"][0]
     x1 =  float(get["lat1"][0])
@@ -122,16 +125,40 @@ def rest_shortestPath():
     id2 = cur.fetchall()[0][0]
     dbpool.putconn(con)
 
+    model.g.change_cost(1, 0, 0)
     res = model.g.one_to_one(id1, id2, output="geometry")
-
+    res["distance"] = res["distance"] * 1000
+    res["time"] = res["time"] * 3600
 
 
     return XHRResponse(json.dumps({"status":"ok","result": res}), mimetype="application/json")
 
+@app.route('/api/compute_traffic', methods=["GET", "POST"])
+def compute_traffic():
+    if model.compute_info.is_compute:
+       return XHRResponse(json.dumps({"status":"nok","result": "calculation is running now"}), mimetype="application/json")
+    def run():
+        model.compute_info.is_compute = True
+        model.trip_destination(0.01, 30)
+        model.count_transport()
+        model.save_traffic()
+        model.compute_info.is_compute = False
+    thread.start_new_thread(run,())
+    return XHRResponse(json.dumps({"status":"ok","result": "calculation began"}), mimetype="application/json")
+
+@app.route('/api/compute_traffic_progress', methods=["GET", "POST"])
+def compute_traffic_progress():
+    if not model.compute_info.is_compute:
+        res = {"isrun": False, "progress": None}
+    else:
+        res = {"isrun": True, "progress": model.compute_info.progress}
+    return XHRResponse(json.dumps({"status":"ok","result": res}), mimetype="application/json")
+
+
 
 if __name__ == "__main__":
     app.debug = True
-    app.run(port=8888)
+    app.run(port=8082)
 
 
 

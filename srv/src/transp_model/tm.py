@@ -8,6 +8,11 @@ from graph import Graph
 import time
 import json
 
+class ComputeInfo:
+    def __init__(self):
+        self.is_compute = False
+        self.progress = 0
+
 
 class TransModel:
     def __init__(self):
@@ -47,6 +52,7 @@ class TransModel:
         self.T = np.ndarray(shape=(self.O.size, self.D.size))
 
         self.prepare_od() #only for testing
+        self.compute_info = ComputeInfo()
 
 
     #olny for test!!
@@ -185,7 +191,7 @@ class TransModel:
             if num_of_iter > maximum_iterations:
                 break
 
-        np.save("cache/T", self.T)
+        #np.save("cache/T", self.T)
         return (delta, delta_mid)
 
     def load_t(self):
@@ -230,7 +236,7 @@ class TransModel:
                     j += 1
                 #print time.time() - a
             i += 1
-            pb.go(i)
+            self.compute_info.progress = pb.go(i)
 
     def save_traffic(self):
         ids = self.g.g.es.get_attribute_values("id")
