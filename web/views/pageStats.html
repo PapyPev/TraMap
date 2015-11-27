@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+  <title>HMP::Stats</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <!-- ==================================================================== -->
+  <link rel="icon" type="image/png" href="../img/icon-web/favicon-32x32.png" sizes="32x32" />
+  <link rel="icon" type="image/png" href="../img/icon-web/favicon-16x16.png" sizes="16x16" />
+  <!-- http://stackoverflow.com/questions/4888377/how-to-add-a-browser-tab-icon-for-a-website -->
+
+  <!-- ==================================================================== -->
+  <link rel="stylesheet" 
+    href="../lib/bootstrap/3.3.5-dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" 
+    href="../lib/bootstrap/ext-select/dist/css/bootstrap-select.min.css" />
+  <link rel="stylesheet" 
+    href="../css/miniweb.css" />
+
+  <!-- ==================================================================== -->
+  <script src="../lib/jquery/2.1.4/jquery.min.js"></script>
+  <script src="../lib/bootstrap/3.3.5-dist/js/bootstrap.min.js"></script>
+  <script 
+    src="../lib/bootstrap/ext-select/dist/js/bootstrap-select.min.js"></script>
+  <script 
+    src="../lib/amcharts/3.17.3/amcharts/amcharts.js"></script>
+  <script 
+    src="../lib/amcharts/3.17.3/amcharts/serial.js"></script>
+
+  <!-- ==================================================================== -->
+  <script src="../js/pageStats.js"></script>
+
+</head>
+<body>
+
+  <div class="container">
+
+    <div class="header clearfix">
+      <nav>
+        <ul class="nav nav-pills pull-right">
+          <li role="presentation"><a href="../index.html">Map</a></li>
+          <li role="presentation"><a href="./pageStations.html">Stations</a></li>
+          <li><a href="./pageTimetables.html">Timetables</a></li>
+          <li role="presentation" class="active"><a href="./pageStats.html">Stats</a></li>
+        </ul>
+      </nav>
+      <h3 class="text-muted">MapProject</h3>
+    </div>
+
+    <div class="row marketing">
+
+      <h1>Stats</h1><br>
+
+      <center><div id="listCharts"></div></center>
+      <div id="chartdiv" style="width: 500px; height: 600px;"></div>
+
+    </div>
+
+    <footer class="footer">
+      <p>&copy; TraMap 2015 - Github <a href="https://www.github.com/PapyPev/TraMap">sources</a></p>
+    </footer>
+
+  </div> <!-- /container -->
+
+</body>
+<script type="text/javascript">
+  console.log("HTML")
+</script>
+</html>

@@ -180,7 +180,7 @@ function gs_getGeoserverLayers(url, repository, projection, maxFeatures, bbox){
   // Prepare POST Request to Geoserver for GetCapabilities XML File
   if (window.XMLHttpRequest)
   {// code for IE7+, Firefox, Chrome, Opera, Safari
-    xmlhttp=new XMLHttpRequest();
+    xmlhttp=new XMLHttpRequest({mozeSystem:true});
   }
   else
   {// code for IE6, IE5

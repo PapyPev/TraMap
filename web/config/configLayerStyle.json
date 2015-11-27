@@ -75,7 +75,7 @@
       "type": "Point",
       "filters": true,
       "filters_type": "key",
-      "zoom_min": 14,
+      "zoom_min": 16,
       "zoom_max": 18,
       "styles": [
         {
@@ -154,7 +154,7 @@
       "type": "Point",
       "filters": true,
       "filters_type": "key",
-      "zoom_min": 14,
+      "zoom_min": 16,
       "zoom_max": 18,
       "styles": [
         {

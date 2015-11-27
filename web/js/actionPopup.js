@@ -6,7 +6,7 @@
 | All popup functions (load, refresh, actions, events, ...)
 |
 | @author Pev
-| @verion 1.1.4
+| @verion 1.1.5
 |
 |------------------------------------------------------------------------------
 */
@@ -16,7 +16,10 @@
 // ============================================================================
 
 // List : origin destination
-var listOD = [];
+var _LIST_OD = [];
+
+// Layer for Group Polylign itinerary
+var _LAYER_G;
 
 // ============================================================================
 // FUNCTIONS CALCULATE
@@ -29,8 +32,74 @@ var listOD = [];
  */
 function popup_getIntinerary(origin, destination) {
 
-  console.log('popup_getIntinerary');
-  // TODO : algo
+  $.ajax({
+    type: 'GET',
+    url: restProperties.getAddress() + '/ssp?'
+      + 'lon1='+origin.getLatLng().lng
+      +'&lat1='+origin.getLatLng().lat
+      +'&lon2='+destination.getLatLng().lng
+      +'&lat2='+destination.getLatLng().lat,
+    //url : './js/itinerary.json',
+    contentType: 'application/json; charset=utf-8',
+    dataType: 'json',
+
+    success: function(data){
+      
+      // Test returned status
+      if (data.status == 'ok') {
+
+        // All polylines
+        var multipolylines = [];
+
+        // Fore each feature
+        for (var i = data.result.features.length - 1; i >= 0; i--) {
+          
+          // Point for one polyline
+          var points = [];
+
+          // For each polyline
+          for (var j = data.result.features[i].coordinates.length - 1; j >= 0; j--) {
+            
+            points.push(new L.LatLng(
+              data.result.features[i].coordinates[j][1],
+              data.result.features[i].coordinates[j][0]
+            ));
+
+          }
+
+          // Create new polyline
+          var polyline = new L.Polyline(points, {
+            color: 'blue',
+            weight: 10,
+            opacity: 1,
+            smoothFactor: 1
+          });
+
+          // Add to list of polyline
+          multipolylines.push(polyline);
+
+        }
+
+        // Add to one layer Group
+        _LAYER_G = L.layerGroup(multipolylines);
+        _LAYER_G.addTo(map);
+
+      } else{
+        alert('Something is wrong...');
+      }
+
+    },
+
+    error: function(jqXHR, exception){
+      if (jqXHR.status === 401) {
+        console.log('HTTP Error 401 Unauthorized.');
+      } else {
+        console.log('Uncaught Error.\n' + jqXHR.responseText);
+      }
+      alert('Something is wrong...');
+    },
+    async: false
+  });
 
 } //--- end popup_getIntinerary (origin, destination)
 
@@ -310,14 +379,18 @@ function popup_buttonSearchByPointer() {
   });
 
   // Clean old list of marker OD (origin destination)
-  if (listOD.length !== 0) {
-    for (var i = 0; i < listOD.length; i++) {
-      map.removeLayer(listOD[i]);
+  if (_LIST_OD.length !== 0) {
+    for (var i = 0; i < _LIST_OD.length; i++) {
+      map.removeLayer(_LIST_OD[i]);
     }
   }
 
+  if (_LAYER_G) {
+    map.removeLayer(_LAYER_G);
+  }
+
   // Init list of marker OD
-  listOD = [];
+  _LIST_OD = [];
 
   // --------------------
 
@@ -325,24 +398,24 @@ function popup_buttonSearchByPointer() {
   map.on('click', function(e) {
     
     // Add point on list
-    listOD.push(new L.Marker(e.latlng, {
+    _LIST_OD.push(new L.Marker(e.latlng, {
       icon: redMarker,
       draggable:false
     }));
     
     // For each point, add to map
-    for (var i = 0; i < listOD.length; i++) {
-      map.addLayer(listOD[i].bindPopup(listOD[i].getLatLng().toString()));
+    for (var i = 0; i < _LIST_OD.length; i++) {
+      map.addLayer(_LIST_OD[i].bindPopup(_LIST_OD[i].getLatLng().toString()));
     }
     
     // If we have 2 points
-    if (listOD.length == 2) {
+    if (_LIST_OD.length == 2) {
       // Remove click event
         map.off('click');
       // Remove cursor style
       $('.leaflet-container').css('cursor','');
       // Run itinerary alorithm
-      popup_getIntinerary(listOD[0], listOD[1]);
+      popup_getIntinerary(_LIST_OD[0], _LIST_OD[1]);
     }
     
   }); // end map.on('click', function(e) {}
@@ -358,8 +431,8 @@ function popup_buttonSearchByPointer() {
       // Remove cursor style
       $('.leaflet-container').css('cursor','');
       // Remove old marker from the map
-      for (var i = 0; i < listOD.length; i++) {
-        map.removeLayer(listOD[i]);
+      for (var i = 0; i < _LIST_OD.length; i++) {
+        map.removeLayer(_LIST_OD[i]);
       }
     }
 
