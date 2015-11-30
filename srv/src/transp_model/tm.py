@@ -1,3 +1,4 @@
+
 __author__ = 'kolovsky'
 
 import tm_settings as s
@@ -70,6 +71,7 @@ class TransModel:
         """
         define O and D value for non home zones
         this function is for testing only
+
         :return:
         """
         sum_home = 0
@@ -88,6 +90,7 @@ class TransModel:
     def _is_enable_combination(self, i, j):
         """
         Is it enable combination (type of zones)
+
         :param i: row index in T matrix
         :param j: column index in T matrix
         :return: True if enable combination (boolen)
@@ -101,6 +104,7 @@ class TransModel:
 
     def _get_od_rules(self,i,pair_type):
         """
+
         :param i: zone index (source/destination)
         :param pair_type: zone type (source/destination)
         :return: Number of people who travel from/to zone i from/to zone type
@@ -116,6 +120,7 @@ class TransModel:
     def _model(self, i, j):
         """
         Transport model.
+
         :param i: row index in transportation matrix (T)
         :param j: column index in transportation matrix (T)
         :return: model value for cell
@@ -141,6 +146,7 @@ class TransModel:
     def _f(self, c):
         """
         Function for model (1/x^2) (gravity model)
+
         :param c: input cost
         :return: function value
         """
@@ -150,6 +156,7 @@ class TransModel:
 
     def _insert_to_T(self,function):
         """
+
         :param function: function for insert to matrix T e.g self._model
         :return: matrix T
         """
@@ -162,6 +169,7 @@ class TransModel:
     def trip_destination(self, maximum_delta, maximum_iterations):
         """
         Compute transportation matrix
+
         :param maximum_delta: maximum error in balancing matrix
         :param maximum_iterations: maximum number of iteration in balancing matrix
         :return: (delta, average_delta) error in balancing matrix

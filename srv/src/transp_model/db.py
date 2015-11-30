@@ -22,30 +22,25 @@ class Database:
         print "Implement me, please! You can use SQL script in example data folder"
         raise RuntimeError("create_database_model: Implement me, please!")
 
-
-    def get_roads(self):
-        sql = """SELECT r.id, r.source_id, r.target_id, r.cost, r.reverse_cost, r.length, r.speed, r.type, p.pos, p.neg, ST_asgeoJSON(r.geometry) as geom
-            from roads as r, profile as p where ST_Intersects(geometry,%s) and r.id = p.id"""
-        self.cur.execute(sql, [self.area_geometry])
-        column_name = {"id": 0,
-                       "source": 1,
-                       "target": 2,
-                       "cost":3 ,
-                       "reverse_cost": 4,
-                       "length": 5,
-                       "speed": 6,
-                       "type": 7,
-                       "vd_pos": 8,
-                       "vd_neg": 9,
-                       "geojson": 10}
-        return (self.cur.fetchall(), column_name)
-
     def general_information(self, column, area_name=tm_settings.area_name_for_modeling):
+        """
+
+        :param column: Name of column
+        :param area_name: area name (column area in table general_area_information)
+        :return: cell value
+        """
         sql = "SELECT "+column+" from tramap.general_area_information where name = %s"
         self.cur.execute(sql,[area_name])
         return self.cur.fetchall()[0][0]
 
     def save_traffic(self, ids, traffic, direction):
+        """
+
+        :param ids: list of edge id
+        :param traffic: list of traffic
+        :param direction: list of direction
+        :return:
+        """
         sql_d = "DELETE FROM tramap.traffic where true"
         self.cur.execute(sql_d)
         sql_seq = "ALTER SEQUENCE tramap.traffic_id_seq RESTART WITH 1"
@@ -57,6 +52,13 @@ class Database:
         self.conn.commit()
 
     def save_t(self, matrix, zones_property_id):
+        """
+        Save T matrix to database
+
+        :param matrix: T matrix
+        :param zones_property_id: list of zones id
+        :return:
+        """
         sql_d = "DELETE FROM tramap.od_pairs WHERE true;"
         self.cur.execute(sql_d)
         sql_seq = "ALTER SEQUENCE tramap.od_pairs_id_seq RESTART WITH 1"
@@ -69,6 +71,10 @@ class Database:
         self.conn.commit()
 
     def get_graph(self):
+        """
+
+        :return: list of edges [(id, source, target, is oneway), ..]
+        """
         sql = """SELECT id, source_id, target_id, oneway
             FROM tramap.roads where ST_Intersects(geometry,%s) order by id"""
         self.cur.execute(sql, [self.area_geometry])
@@ -76,16 +82,31 @@ class Database:
         return self.cur.fetchall()
 
     def get_vertex_property(self, column):
+        """
+
+        :param column: name of column
+        :return: property list
+        """
         sql = "SELECT "+column+" FROM tramap.nodes where ST_Intersects(geometry,%s) order by id"
         self.cur.execute(sql, [self.area_geometry])
         return np.transpose(self.cur.fetchall()).tolist()[0]
 
     def get_edge_property(self, column):
+        """
+
+        :param column: name of column
+        :return: property list
+        """
         sql = "SELECT "+column+" FROM tramap.roads where ST_Intersects(geometry,%s) order by id"
         self.cur.execute(sql, [self.area_geometry])
         return np.transpose(self.cur.fetchall()).tolist()[0]
 
     def get_zone_property(self, column):
+        """
+
+        :param column: name of column
+        :return: property list
+        """
         sql = "SELECT "+column+" FROM tramap.zones where ST_Intersects(geometry,%s) order by id"
         self.cur.execute(sql, [self.area_geometry])
         return np.transpose(self.cur.fetchall()).tolist()[0]

@@ -1,0 +1,419 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Welcome to TraMap’s documentation! &mdash; TraMap a documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     'a',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="TraMap a documentation" href="#" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="#">TraMap a documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="welcome-to-tramap-s-documentation">
+<h1>Welcome to TraMap&#8217;s documentation!<a class="headerlink" href="#welcome-to-tramap-s-documentation" title="Permalink to this headline">¶</a></h1>
+<p>Contents:</p>
+<div class="toctree-wrapper compound">
+<ul class="simple">
+</ul>
+</div>
+<span class="target" id="module-transp_model.graph"></span><dl class="class">
+<dt id="transp_model.graph.Graph">
+<em class="property">class </em><tt class="descclassname">transp_model.graph.</tt><tt class="descname">Graph</tt><a class="reference internal" href="_modules/transp_model/graph.html#Graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transp_model.graph.Graph" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="transp_model.graph.Graph.change_cost">
+<tt class="descname">change_cost</tt><big>(</big><em>k_length</em>, <em>k_time</em>, <em>k_cant</em><big>)</big><a class="reference internal" href="_modules/transp_model/graph.html#Graph.change_cost"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transp_model.graph.Graph.change_cost" title="Permalink to this definition">¶</a></dt>
+<dd><p>Change cost(weight) for graph depend od coeficients.
+Note: cost &gt; 0  required!!</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>k_length</strong> &#8211; coef. for length</li>
+<li><strong>k_time</strong> &#8211; coef. for time</li>
+<li><strong>k_cant</strong> &#8211; coef. for vertical distance</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="transp_model.graph.Graph.create_graph">
+<tt class="descname">create_graph</tt><big>(</big><em>table</em><big>)</big><a class="reference internal" href="_modules/transp_model/graph.html#Graph.create_graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transp_model.graph.Graph.create_graph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Build graph.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>table</strong> &#8211; list of edges (one edge: [id, source, target, is Oneway (boolen)]</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="transp_model.graph.Graph.get_cost_matrix">
+<tt class="descname">get_cost_matrix</tt><big>(</big><em>nodes</em><big>)</big><a class="reference internal" href="_modules/transp_model/graph.html#Graph.get_cost_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transp_model.graph.Graph.get_cost_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create cost matrix (C)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>nodes</strong> &#8211; list of node_id</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">C matrix</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="transp_model.graph.Graph.one_to_n">
+<tt class="descname">one_to_n</tt><big>(</big><em>s</em>, <em>t_list</em><big>)</big><a class="reference internal" href="_modules/transp_model/graph.html#Graph.one_to_n"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transp_model.graph.Graph.one_to_n" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find paths from s to all vertex in t_list.</p>
+<p>:param s source node
+:param t_list list of target nodes
+:return list of paths (paths is list of edges id)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="transp_model.graph.Graph.one_to_one">
+<tt class="descname">one_to_one</tt><big>(</big><em>s</em>, <em>t</em>, <em>output='id'</em><big>)</big><a class="reference internal" href="_modules/transp_model/graph.html#Graph.one_to_one"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transp_model.graph.Graph.one_to_one" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute shortest path from s to t</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>s</strong> &#8211; source node</li>
+<li><strong>t</strong> &#8211; target node</li>
+<li><strong>output</strong> &#8211; path output property name (e.g for edge &#8216;id&#8217;)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">{&#8220;distance&#8221;: dist, &#8220;time&#8221;: time, &#8220;features&#8221;: out}</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="transp_model.graph.Graph.set_edge_property">
+<tt class="descname">set_edge_property</tt><big>(</big><em>property_name</em>, <em>data</em><big>)</big><a class="reference internal" href="_modules/transp_model/graph.html#Graph.set_edge_property"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transp_model.graph.Graph.set_edge_property" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add property data to graph</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>property_name</strong> &#8211; required property names: length, speed, vd  (in  km, km/h, m)</li>
+<li><strong>data</strong> &#8211; list with data (same length like number of edge (undirected))</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-transp_model.tm"></span><dl class="class">
+<dt id="transp_model.tm.TransModel">
+<em class="property">class </em><tt class="descclassname">transp_model.tm.</tt><tt class="descname">TransModel</tt><a class="reference internal" href="_modules/transp_model/tm.html#TransModel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transp_model.tm.TransModel" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="transp_model.tm.TransModel.count_transport">
+<tt class="descname">count_transport</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/transp_model/tm.html#TransModel.count_transport"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transp_model.tm.TransModel.count_transport" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute traffic for all roads</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="transp_model.tm.TransModel.load_t">
+<tt class="descname">load_t</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/transp_model/tm.html#TransModel.load_t"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transp_model.tm.TransModel.load_t" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load T matrix from cache.
+:return:</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="transp_model.tm.TransModel.prepare_od">
+<tt class="descname">prepare_od</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/transp_model/tm.html#TransModel.prepare_od"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transp_model.tm.TransModel.prepare_od" title="Permalink to this definition">¶</a></dt>
+<dd><p>define O and D value for non home zones
+this function is for testing only</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="transp_model.tm.TransModel.save_t">
+<tt class="descname">save_t</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/transp_model/tm.html#TransModel.save_t"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transp_model.tm.TransModel.save_t" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save T matrix to database (table OD_pairs).
+:return:</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="transp_model.tm.TransModel.save_traffic">
+<tt class="descname">save_traffic</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/transp_model/tm.html#TransModel.save_traffic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transp_model.tm.TransModel.save_traffic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save traffic to database table &#8220;tramap.traffic&#8221;</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="transp_model.tm.TransModel.trip_destination">
+<tt class="descname">trip_destination</tt><big>(</big><em>maximum_delta</em>, <em>maximum_iterations</em><big>)</big><a class="reference internal" href="_modules/transp_model/tm.html#TransModel.trip_destination"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transp_model.tm.TransModel.trip_destination" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute transportation matrix</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>maximum_delta</strong> &#8211; maximum error in balancing matrix</li>
+<li><strong>maximum_iterations</strong> &#8211; maximum number of iteration in balancing matrix</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(delta, average_delta) error in balancing matrix</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-transp_model.db"></span><dl class="class">
+<dt id="transp_model.db.Database">
+<em class="property">class </em><tt class="descclassname">transp_model.db.</tt><tt class="descname">Database</tt><a class="reference internal" href="_modules/transp_model/db.html#Database"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transp_model.db.Database" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="transp_model.db.Database.general_information">
+<tt class="descname">general_information</tt><big>(</big><em>column</em>, <em>area_name='pokus'</em><big>)</big><a class="reference internal" href="_modules/transp_model/db.html#Database.general_information"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transp_model.db.Database.general_information" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>column</strong> &#8211; Name of column</li>
+<li><strong>area_name</strong> &#8211; area name (column area in table general_area_information)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">cell value</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="transp_model.db.Database.get_edge_property">
+<tt class="descname">get_edge_property</tt><big>(</big><em>column</em><big>)</big><a class="reference internal" href="_modules/transp_model/db.html#Database.get_edge_property"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transp_model.db.Database.get_edge_property" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>column</strong> &#8211; name of column</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">property list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="transp_model.db.Database.get_graph">
+<tt class="descname">get_graph</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/transp_model/db.html#Database.get_graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transp_model.db.Database.get_graph" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">list of edges [(id, source, target, is oneway), ..]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="transp_model.db.Database.get_vertex_property">
+<tt class="descname">get_vertex_property</tt><big>(</big><em>column</em><big>)</big><a class="reference internal" href="_modules/transp_model/db.html#Database.get_vertex_property"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transp_model.db.Database.get_vertex_property" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>column</strong> &#8211; name of column</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">property list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="transp_model.db.Database.get_zone_property">
+<tt class="descname">get_zone_property</tt><big>(</big><em>column</em><big>)</big><a class="reference internal" href="_modules/transp_model/db.html#Database.get_zone_property"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transp_model.db.Database.get_zone_property" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>column</strong> &#8211; name of column</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">property list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="transp_model.db.Database.save_t">
+<tt class="descname">save_t</tt><big>(</big><em>matrix</em>, <em>zones_property_id</em><big>)</big><a class="reference internal" href="_modules/transp_model/db.html#Database.save_t"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transp_model.db.Database.save_t" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save T matrix to database</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>matrix</strong> &#8211; T matrix</li>
+<li><strong>zones_property_id</strong> &#8211; list of zones id</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="transp_model.db.Database.save_traffic">
+<tt class="descname">save_traffic</tt><big>(</big><em>ids</em>, <em>traffic</em>, <em>direction</em><big>)</big><a class="reference internal" href="_modules/transp_model/db.html#Database.save_traffic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transp_model.db.Database.save_traffic" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ids</strong> &#8211; list of edge id</li>
+<li><strong>traffic</strong> &#8211; list of traffic</li>
+<li><strong>direction</strong> &#8211; list of direction</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><em>Index</em></a></li>
+<li><a class="reference internal" href="py-modindex.html"><em>Module Index</em></a></li>
+<li><a class="reference internal" href="search.html"><em>Search Page</em></a></li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Welcome to TraMap&#8217;s documentation!</a></li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/index.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="#">TraMap a documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, a.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

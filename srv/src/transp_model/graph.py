@@ -17,6 +17,7 @@ class Graph:
 
     def _create_vertex(self, table):
         """
+
         :param table:
         :return:
         """
@@ -44,6 +45,7 @@ class Graph:
     def create_graph(self, table):
         """
         Build graph.
+
         :param table: list of edges (one edge: [id, source, target, is Oneway (boolen)]
         :return:
         """
@@ -67,6 +69,7 @@ class Graph:
     def set_edge_property(self, property_name, data):
         """
         Add property data to graph
+
         :param property_name: required property names: length, speed, vd  (in  km, km/h, m)
         :param data: list with data (same length like number of edge (undirected))
         :return:
@@ -93,6 +96,7 @@ class Graph:
         """
         Change cost(weight) for graph depend od coeficients.
         Note: cost > 0  required!!
+
         :param k_length: coef. for length
         :param k_time:  coef. for time
         :param k_cant: coef. for vertical distance
@@ -117,6 +121,7 @@ class Graph:
     def get_cost_matrix(self, nodes):
         """
         Create cost matrix (C)
+
         :param nodes: list of node_id
         :return: C matrix
         """
@@ -136,6 +141,7 @@ class Graph:
     def one_to_one(self,s ,t, output="id"):
         """
         Compute shortest path from s to t
+
         :param s: source node
         :param t: target node
         :param output: path output property name (e.g for edge 'id')
@@ -158,6 +164,7 @@ class Graph:
     def one_to_n(self, s, t_list):
         """
         Find paths from s to all vertex in t_list.
+
         :param s source node
         :param t_list list of target nodes
         :return list of paths (paths is list of edges id)

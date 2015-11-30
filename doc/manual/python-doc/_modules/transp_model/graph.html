@@ -1,0 +1,281 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>transp_model.graph &mdash; TraMap a documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     'a',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="TraMap a documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">TraMap a documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for transp_model.graph</h1><div class="highlight"><pre>
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&#39;kolovsky&#39;</span>
+
+<span class="kn">import</span> <span class="nn">igraph</span>
+<span class="kn">from</span> <span class="nn">progress_bar</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+
+<div class="viewcode-block" id="Graph"><a class="viewcode-back" href="../../index.html#transp_model.graph.Graph">[docs]</a><span class="k">class</span> <span class="nc">Graph</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">g</span> <span class="o">=</span> <span class="n">igraph</span><span class="o">.</span><span class="n">Graph</span><span class="p">(</span><span class="n">directed</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_vertex_id</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_vertex_id</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_count_vertex</span> <span class="o">=</span> <span class="mi">100000000</span>  <span class="c"># max size of graph</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p_oneway</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_create_vertex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param table:</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_vertex_id</span> <span class="o">=</span> <span class="n">table</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_vertex_id</span> <span class="o">=</span> <span class="n">table</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">table</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_vertex_id</span> <span class="o">&gt;</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_vertex_id</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_vertex_id</span> <span class="o">&gt;</span> <span class="n">row</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_vertex_id</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_vertex_id</span> <span class="o">&lt;</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_vertex_id</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_vertex_id</span> <span class="o">&lt;</span> <span class="n">row</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_vertex_id</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+        <span class="c"># check max size of graph</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_count_vertex</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_vertex_id</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_vertex_id</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s">&quot;Too large graph&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">add_vertices</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_vertex_id</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_vertex_id</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+
+
+    <span class="k">def</span> <span class="nf">id_to_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">id</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_vertex_id</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s">&quot;ID </span><span class="si">%i</span><span class="s"> no exist, ID must be in interval [</span><span class="si">%i</span><span class="s">, </span><span class="si">%i</span><span class="s">]&quot;</span> <span class="o">%</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_vertex_id</span><span class="p">,</span>
+                                                                                 <span class="bp">self</span><span class="o">.</span><span class="n">max_vertex_id</span><span class="p">))</span>
+        <span class="k">return</span> <span class="nb">id</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_vertex_id</span>
+
+<div class="viewcode-block" id="Graph.create_graph"><a class="viewcode-back" href="../../index.html#transp_model.graph.Graph.create_graph">[docs]</a>    <span class="k">def</span> <span class="nf">create_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Build graph.</span>
+
+<span class="sd">        :param table: list of edges (one edge: [id, source, target, is Oneway (boolen)]</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_vertex</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
+        <span class="n">ig_e</span> <span class="o">=</span> <span class="p">[]</span> <span class="c"># edges</span>
+        <span class="n">ig_d</span> <span class="o">=</span> <span class="p">[]</span> <span class="c"># directions</span>
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">table</span><span class="p">:</span>
+            <span class="n">ig_e</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">id_to_index</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="bp">self</span><span class="o">.</span><span class="n">id_to_index</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">2</span><span class="p">])))</span>
+            <span class="n">ig_d</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">e</span><span class="p">[</span><span class="mi">3</span><span class="p">]:</span>
+                <span class="n">ig_e</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">id_to_index</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span> <span class="bp">self</span><span class="o">.</span><span class="n">id_to_index</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">])))</span>
+                <span class="n">ig_d</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">ig_e</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s">&quot;direction&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ig_d</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s">&quot;traffic&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">ig_d</span><span class="p">)))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">p_oneway</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">table</span><span class="p">))</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="Graph.set_edge_property"><a class="viewcode-back" href="../../index.html#transp_model.graph.Graph.set_edge_property">[docs]</a>    <span class="k">def</span> <span class="nf">set_edge_property</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">property_name</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add property data to graph</span>
+
+<span class="sd">        :param property_name: required property names: length, speed, vd  (in  km, km/h, m)</span>
+<span class="sd">        :param data: list with data (same length like number of edge (undirected))</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">ecount</span><span class="p">()))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)):</span>
+                <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">p_oneway</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+                    <span class="k">if</span> <span class="n">property_name</span> <span class="o">==</span> <span class="s">&quot;vd&quot;</span><span class="p">:</span>
+                        <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="o">-</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="n">property_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">set_vertex_property</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">property_name</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s">&quot;Implement me please!&quot;</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;Implement me please!&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Graph.change_cost"><a class="viewcode-back" href="../../index.html#transp_model.graph.Graph.change_cost">[docs]</a>    <span class="k">def</span> <span class="nf">change_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k_length</span><span class="p">,</span> <span class="n">k_time</span><span class="p">,</span> <span class="n">k_cant</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Change cost(weight) for graph depend od coeficients.</span>
+<span class="sd">        Note: cost &gt; 0  required!!</span>
+
+<span class="sd">        :param k_length: coef. for length</span>
+<span class="sd">        :param k_time:  coef. for time</span>
+<span class="sd">        :param k_cant: coef. for vertical distance</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">np_speed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s">&quot;speed&quot;</span><span class="p">]</span>
+        <span class="n">np_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s">&quot;length&quot;</span><span class="p">]</span>
+        <span class="n">np_vd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s">&quot;vd&quot;</span><span class="p">]</span>
+
+        <span class="n">a</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">k_time</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">np_out</span> <span class="o">=</span> <span class="p">(</span><span class="n">k_length</span> <span class="o">*</span> <span class="n">np_length</span> <span class="o">+</span>  <span class="n">k_cant</span> <span class="o">*</span> <span class="n">np_vd</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">np_out</span> <span class="o">=</span> <span class="p">(</span><span class="n">k_length</span> <span class="o">*</span> <span class="n">np_length</span> <span class="o">+</span> <span class="n">k_time</span> <span class="o">*</span> <span class="p">(</span><span class="n">np_length</span> <span class="o">/</span> <span class="n">np_speed</span><span class="p">)</span> <span class="o">+</span> <span class="n">k_cant</span> <span class="o">*</span> <span class="n">np_vd</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="s">&quot;cost&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np_out</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+</div>
+    <span class="k">def</span> <span class="nf">recompute_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+<div class="viewcode-block" id="Graph.get_cost_matrix"><a class="viewcode-back" href="../../index.html#transp_model.graph.Graph.get_cost_matrix">[docs]</a>    <span class="k">def</span> <span class="nf">get_cost_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create cost matrix (C)</span>
+
+<span class="sd">        :param nodes: list of node_id</span>
+<span class="sd">        :return: C matrix</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pb</span> <span class="o">=</span> <span class="n">Progress_bar</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">))</span>
+        <span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)))</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">zone_node_id</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
+            <span class="n">dist_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">shortest_paths_dijkstra</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id_to_index</span><span class="p">(</span><span class="n">zone_node_id</span><span class="p">),</span> <span class="bp">None</span><span class="p">,</span> <span class="s">&quot;cost&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">zone_node_id_v</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
+                <span class="n">C</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">dist_map</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">id_to_index</span><span class="p">(</span><span class="n">zone_node_id_v</span><span class="p">)]</span>
+                <span class="n">j</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">pb</span><span class="o">.</span><span class="n">go</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">C</span>
+</div>
+<div class="viewcode-block" id="Graph.one_to_one"><a class="viewcode-back" href="../../index.html#transp_model.graph.Graph.one_to_one">[docs]</a>    <span class="k">def</span> <span class="nf">one_to_one</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">s</span> <span class="p">,</span><span class="n">t</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s">&quot;id&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute shortest path from s to t</span>
+
+<span class="sd">        :param s: source node</span>
+<span class="sd">        :param t: target node</span>
+<span class="sd">        :param output: path output property name (e.g for edge &#39;id&#39;)</span>
+<span class="sd">        :return: {&quot;distance&quot;: dist, &quot;time&quot;: time, &quot;features&quot;: out}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">get_shortest_paths</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id_to_index</span><span class="p">(</span><span class="n">s</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">id_to_index</span><span class="p">(</span><span class="n">t</span><span class="p">),</span><span class="n">weights</span><span class="o">=</span><span class="s">&quot;cost&quot;</span><span class="p">,</span><span class="n">output</span><span class="o">=</span><span class="s">&quot;epath&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">dist</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">time</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">np_speed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s">&quot;speed&quot;</span><span class="p">]</span>
+        <span class="n">np_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s">&quot;length&quot;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">path</span><span class="p">:</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="n">output</span><span class="p">][</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">dist</span> <span class="o">+=</span> <span class="n">np_length</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">time</span> <span class="o">+=</span> <span class="n">np_length</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="n">np_speed</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="p">{</span><span class="s">&quot;distance&quot;</span><span class="p">:</span> <span class="n">dist</span><span class="p">,</span> <span class="s">&quot;time&quot;</span><span class="p">:</span> <span class="n">time</span><span class="p">,</span> <span class="s">&quot;features&quot;</span><span class="p">:</span> <span class="n">out</span><span class="p">}</span>
+
+</div>
+<div class="viewcode-block" id="Graph.one_to_n"><a class="viewcode-back" href="../../index.html#transp_model.graph.Graph.one_to_n">[docs]</a>    <span class="k">def</span> <span class="nf">one_to_n</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">t_list</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Find paths from s to all vertex in t_list.</span>
+
+<span class="sd">        :param s source node</span>
+<span class="sd">        :param t_list list of target nodes</span>
+<span class="sd">        :return list of paths (paths is list of edges id)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ig_paths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">get_shortest_paths</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id_to_index</span><span class="p">(</span><span class="n">s</span><span class="p">),</span> <span class="n">to</span><span class="o">=</span><span class="nb">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id_to_index</span><span class="p">,</span> <span class="n">t_list</span><span class="p">),</span> <span class="n">weights</span><span class="o">=</span><span class="s">&quot;cost&quot;</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s">&quot;epath&quot;</span><span class="p">)</span>
+        <span class="n">ig_paths_m</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">False</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="bp">True</span><span class="p">,</span> <span class="n">ig_paths</span><span class="p">)</span>
+
+        <span class="n">all_path</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id_to_index</span><span class="p">,</span> <span class="n">t_list</span><span class="p">):</span>
+            <span class="n">pp</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ig_paths_m</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="n">ig_paths_m</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">target</span><span class="p">:</span>
+                    <span class="n">all_path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ig_paths_m</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                    <span class="n">pp</span> <span class="o">=</span> <span class="mi">0</span>
+                    <span class="k">break</span>
+            <span class="k">if</span> <span class="n">pp</span><span class="p">:</span>
+                <span class="n">all_path</span><span class="o">.</span><span class="n">append</span><span class="p">([])</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_path</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">t_list</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;not corespond letgth of input and output&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">all_path</span>
+</pre></div></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">TraMap a documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, a.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,359 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>transp_model.tm &mdash; TraMap a documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     'a',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="TraMap a documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">TraMap a documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for transp_model.tm</h1><div class="highlight"><pre>
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&#39;kolovsky&#39;</span>
+
+<span class="kn">import</span> <span class="nn">tm_settings</span> <span class="kn">as</span> <span class="nn">s</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">db</span>
+<span class="kn">from</span> <span class="nn">progress_bar</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">graph</span> <span class="kn">import</span> <span class="n">Graph</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">json</span>
+
+<span class="k">class</span> <span class="nc">ComputeInfo</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_compute</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">progress</span> <span class="o">=</span> <span class="mi">0</span>
+
+
+<span class="k">class</span> <span class="nc">TransModel</span><span class="p">:</span>
+<div class="viewcode-block" id="TransModel"><a class="viewcode-back" href="../../index.html#transp_model.tm.TransModel">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># database</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Database</span><span class="p">()</span>
+        <span class="n">trip_per_person</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">general_information</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">transpotation_type</span><span class="p">)</span>
+
+        <span class="c"># graph</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">g</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
+        <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">get_graph</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">create_graph</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
+        <span class="c"># length</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">set_edge_property</span><span class="p">(</span><span class="s">&quot;length&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">get_edge_property</span><span class="p">(</span><span class="s">&quot;length&quot;</span><span class="p">))</span>
+        <span class="c"># speed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">set_edge_property</span><span class="p">(</span><span class="s">&quot;speed&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">get_edge_property</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">speed</span><span class="p">))</span>
+        <span class="c"># vertical ditance</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">get_edge_property</span><span class="p">(</span><span class="s">&quot;vertical_distance_pos&quot;</span><span class="p">))</span>
+        <span class="n">neg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">get_edge_property</span><span class="p">(</span><span class="s">&quot;vertical_distance_neg&quot;</span><span class="p">))</span>
+        <span class="n">vd</span> <span class="o">=</span> <span class="n">pos</span> <span class="o">+</span> <span class="n">neg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">set_edge_property</span><span class="p">(</span><span class="s">&quot;vd&quot;</span><span class="p">,</span> <span class="n">vd</span><span class="p">)</span>
+        <span class="c"># edge id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">set_edge_property</span><span class="p">(</span><span class="s">&quot;id&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">get_edge_property</span><span class="p">(</span><span class="s">&quot;id&quot;</span><span class="p">))</span>
+        <span class="c"># geometry</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">set_edge_property</span><span class="p">(</span><span class="s">&quot;geometry&quot;</span><span class="p">,</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">get_edge_property</span><span class="p">(</span><span class="s">&quot;ST_asgeojson(ST_transform(geometry,4326))&quot;</span><span class="p">)))</span>
+        <span class="c"># compute first path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">change_cost</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">O</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">*</span> <span class="n">trip_per_person</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">get_zone_property</span><span class="p">(</span><span class="s">&quot;num_of_people&quot;</span><span class="p">)))</span> <span class="c">#origin zones</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">*</span> <span class="n">trip_per_person</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">get_zone_property</span><span class="p">(</span><span class="s">&quot;num_of_people&quot;</span><span class="p">)))</span> <span class="c">#destination zones</span>
+
+        <span class="c">#zones property</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">zones_property_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">get_zone_property</span><span class="p">(</span><span class="s">&quot;type&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">zones_property_subtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">get_zone_property</span><span class="p">(</span><span class="s">&quot;subtype&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">zones_property_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">get_zone_property</span><span class="p">(</span><span class="s">&quot;id&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">zones_property_node_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">get_zone_property</span><span class="p">(</span><span class="s">&quot;node_id&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">zones_property_age_cat</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">age_column</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">age_category</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">zones_property_age_cat</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">get_zone_property</span><span class="p">(</span><span class="n">age_column</span><span class="p">))</span>
+
+        <span class="c">#cost matrix</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">C</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="c">#transport matrix</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">T</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">O</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">D</span><span class="o">.</span><span class="n">size</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">prepare_od</span><span class="p">()</span> <span class="c">#only for testing</span>
+
+        <span class="c"># for computing info</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">compute_info</span> <span class="o">=</span> <span class="n">ComputeInfo</span><span class="p">()</span>
+
+
+    <span class="c">#olny for test!!</span>
+    <span class="k">def</span> <span class="nf">prepare_od</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TransModel.prepare_od"><a class="viewcode-back" href="../../index.html#transp_model.tm.TransModel.prepare_od">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        define O and D value for non home zones</span>
+<span class="sd">        this function is for testing only</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sum_home</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">non_home_count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">O</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">zones_property_type</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="s">&quot;home&quot;</span><span class="p">:</span>
+                <span class="n">sum_home</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">O</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">non_home_count</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">O</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">zones_property_type</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">!=</span> <span class="s">&quot;home&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">O</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">sum_home</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="n">non_home_count</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">D</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">sum_home</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="n">non_home_count</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_is_enable_combination</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">):</span></div>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Is it enable combination (type of zones)</span>
+
+<span class="sd">        :param i: row index in T matrix</span>
+<span class="sd">        :param j: column index in T matrix</span>
+<span class="sd">        :return: True if enable combination (boolen)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">target_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">zones_property_type</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+        <span class="n">source_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">zones_property_type</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">target_type</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">enable_type_combination</span><span class="p">[</span><span class="n">source_type</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+
+    <span class="k">def</span> <span class="nf">_get_od_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">pair_type</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param i: zone index (source/destination)</span>
+<span class="sd">        :param pair_type: zone type (source/destination)</span>
+<span class="sd">        :return: Number of people who travel from/to zone i from/to zone type</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">offer</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">num_of_age_cat</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">age_rule</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">age_category_rules</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">pair_type</span> <span class="ow">in</span> <span class="n">age_rule</span><span class="p">:</span>
+                <span class="n">offer</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">O</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">zones_property_age_cat</span><span class="p">[</span><span class="n">num_of_age_cat</span><span class="p">][</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">num_of_age_cat</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">offer</span>
+
+    <span class="k">def</span> <span class="nf">_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transport model.</span>
+
+<span class="sd">        :param i: row index in transportation matrix (T)</span>
+<span class="sd">        :param j: column index in transportation matrix (T)</span>
+<span class="sd">        :return: model value for cell</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_enable_combination</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">zones_property_type</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="s">&quot;home&quot;</span><span class="p">:</span>
+                <span class="n">Ti</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_od_rules</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">zones_property_type</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+                <span class="n">Tj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">D</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">zones_property_type</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="s">&quot;home&quot;</span><span class="p">:</span>
+                <span class="n">Tj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_od_rules</span><span class="p">(</span><span class="n">j</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">zones_property_type</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                <span class="n">Ti</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">O</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">Ti</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">O</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">Tj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">D</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">Ti</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">Tj</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">print</span> <span class="n">Ti</span><span class="p">,</span> <span class="n">Tj</span>
+            <span class="k">return</span> <span class="n">Ti</span> <span class="o">*</span> <span class="n">Tj</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_f</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">C</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">])</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+
+    <span class="k">def</span> <span class="nf">_f</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function for model (1/x^2) (gravity model)</span>
+
+<span class="sd">        :param c: input cost</span>
+<span class="sd">        :return: function value</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">c</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="n">c</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_insert_to_T</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">function</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param function: function for insert to matrix T e.g self._model</span>
+<span class="sd">        :return: matrix T</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">Tn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+                <span class="n">Tn</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">function</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Tn</span>
+
+    <span class="k">def</span> <span class="nf">trip_destination</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">maximum_delta</span><span class="p">,</span> <span class="n">maximum_iterations</span><span class="p">):</span>
+<div class="viewcode-block" id="TransModel.trip_destination"><a class="viewcode-back" href="../../index.html#transp_model.tm.TransModel.trip_destination">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute transportation matrix</span>
+
+<span class="sd">        :param maximum_delta: maximum error in balancing matrix</span>
+<span class="sd">        :param maximum_iterations: maximum number of iteration in balancing matrix</span>
+<span class="sd">        :return: (delta, average_delta) error in balancing matrix</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">C</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">get_cost_matrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">zones_property_node_id</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">T</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_insert_to_T</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">)</span>
+
+        <span class="n">delta</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s">&quot;inf&quot;</span><span class="p">)</span>
+        <span class="n">delta_mid</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s">&quot;inf&quot;</span><span class="p">)</span>
+
+        <span class="n">num_of_iter</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="n">delta</span> <span class="o">&gt;</span> <span class="n">maximum_delta</span><span class="p">:</span>
+
+            <span class="n">nf_row</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">nf_row</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">nf_row</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">O</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">/</span> <span class="nb">sum</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">T</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_insert_to_T</span><span class="p">(</span><span class="k">lambda</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">nf_row</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+            <span class="n">nf_column</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">transpose</span><span class="p">():</span>
+                <span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="n">column</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">nf_column</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">nf_column</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">D</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">/</span> <span class="nb">sum</span><span class="p">(</span><span class="n">column</span><span class="p">)</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">T</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_insert_to_T</span><span class="p">(</span><span class="k">lambda</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">nf_column</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+
+
+            <span class="n">delta</span> <span class="o">=</span>  <span class="nb">max</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">nf_column</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="n">delta_mid</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">nf_column</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">nf_column</span><span class="p">)</span>
+
+            <span class="n">num_of_iter</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="k">if</span> <span class="n">num_of_iter</span> <span class="o">&gt;</span> <span class="n">maximum_iterations</span><span class="p">:</span>
+                <span class="k">break</span>
+
+        <span class="c">#np.save(&quot;cache/T&quot;, self.T)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">delta</span><span class="p">,</span> <span class="n">delta_mid</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">load_t</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="TransModel.load_t"><a class="viewcode-back" href="../../index.html#transp_model.tm.TransModel.load_t">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load T matrix from cache.</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">T</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s">&quot;cache/T.npy&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">save_t</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="TransModel.save_t"><a class="viewcode-back" href="../../index.html#transp_model.tm.TransModel.save_t">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Save T matrix to database (table OD_pairs).</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">save_t</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">zones_property_id</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">count_transport</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="c"># je treba jeste dudelat distribuci cen!!!!</span></div>
+<div class="viewcode-block" id="TransModel.count_transport"><a class="viewcode-back" href="../../index.html#transp_model.tm.TransModel.count_transport">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute traffic for all roads</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pb</span> <span class="o">=</span> <span class="n">Progress_bar</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">zones_property_node_id</span><span class="p">))</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">node_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">zones_property_node_id</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">cost</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">cost</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">change_cost</span><span class="p">(</span><span class="n">cost</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">cost</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">cost</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+                <span class="n">paths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">one_to_n</span><span class="p">(</span><span class="n">node_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">zones_property_node_id</span><span class="p">)</span>
+                <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">path</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s">&quot;traffic&quot;</span><span class="p">][</span><span class="n">edge</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s">&quot;traffic&quot;</span><span class="p">][</span><span class="n">edge</span><span class="p">]</span> <span class="o">+</span>  <span class="n">cost</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
+                    <span class="n">j</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">compute_info</span><span class="o">.</span><span class="n">progress</span> <span class="o">=</span> <span class="n">pb</span><span class="o">.</span><span class="n">go</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">save_traffic</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="TransModel.save_traffic"><a class="viewcode-back" href="../../index.html#transp_model.tm.TransModel.save_traffic">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Save traffic to database table &quot;tramap.traffic&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s">&quot;id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="n">traffic</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s">&quot;traffic&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="n">direction</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s">&quot;direction&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">save_traffic</span><span class="p">(</span><span class="n">ids</span><span class="p">,</span> <span class="n">traffic</span><span class="p">,</span> <span class="n">direction</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span></div></div>
+    <span class="n">tm</span> <span class="o">=</span> <span class="n">TransModel</span><span class="p">()</span>
+    <span class="n">delta</span><span class="p">,</span> <span class="n">delta_mid</span> <span class="o">=</span> <span class="n">tm</span><span class="o">.</span><span class="n">trip_destination</span><span class="p">(</span><span class="mf">0.05</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span>
+    <span class="n">tm</span><span class="o">.</span><span class="n">count_transport</span><span class="p">()</span>
+    <span class="n">tm</span><span class="o">.</span><span class="n">save_traffic</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">TraMap a documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, a.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>
