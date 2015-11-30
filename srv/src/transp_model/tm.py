@@ -24,11 +24,20 @@ class TransModel:
         self.g = Graph()
         table = self.db.get_graph()
         self.g.create_graph(table)
+        # length
         self.g.set_edge_property("length", self.db.get_edge_property("length"))
+        # speed
         self.g.set_edge_property("speed", self.db.get_edge_property(s.speed))
-        self.g.set_edge_property("vd", [0]) #PROVIZORNI!!!!
+        # vertical ditance
+        pos = np.array(self.db.get_edge_property("vertical_distance_pos"))
+        neg = np.array(self.db.get_edge_property("vertical_distance_neg"))
+        vd = pos + neg
+        self.g.set_edge_property("vd", vd)
+        # edge id
         self.g.set_edge_property("id", self.db.get_edge_property("id"))
+        # geometry
         self.g.set_edge_property("geometry", map(lambda x: json.loads(x), self.db.get_edge_property("ST_asgeojson(ST_transform(geometry,4326))")))
+        # compute first path
         self.g.change_cost(1, 0, 0)
 
         self.O = np.array(map(lambda x: x * trip_per_person, self.db.get_zone_property("num_of_people"))) #origin zones
@@ -152,6 +161,7 @@ class TransModel:
 
     def trip_destination(self, maximum_delta, maximum_iterations):
         """
+        Compute transportation matrix
         :param maximum_delta: maximum error in balancing matrix
         :param maximum_iterations: maximum number of iteration in balancing matrix
         :return: (delta, average_delta) error in balancing matrix
@@ -217,6 +227,7 @@ class TransModel:
 
     def count_transport(self): # je treba jeste dudelat distribuci cen!!!!
         """
+        Compute traffic for all roads
         """
         pb = Progress_bar(len(self.zones_property_node_id))
         i = 0
@@ -224,38 +235,28 @@ class TransModel:
             for cost in s.cost:
                 self.g.change_cost(cost[0], cost[1], cost[2])
                 paths = self.g.one_to_n(node_id, self.zones_property_node_id)
-                a = time.time()
                 j = 0
-                #print len(paths)
                 for path in paths:
-                    if len(path) != 0 and node_id == 246696:
-                        pass
-                        #print node_id, self.g.g.es["id"][path[0]], self.T[i][j], self.g.p_traffic[path[0]]
-                        #print path[0]
-                        #print len(self.g.p_traffic), len(self.g.g.es["id"])
                     for edge in path:
-                        self.g.p_traffic[edge] = self.g.p_traffic[edge] +  (1.0/len(s.cost)) * self.T[i][j]
+                        self.g.p["traffic"][edge] = self.g.p["traffic"][edge] +  cost[3] * self.T[i][j]
                     j += 1
-                #print time.time() - a
             i += 1
             self.compute_info.progress = pb.go(i)
 
     def save_traffic(self):
         """
-        Save traffic to database table "traffic"
+        Save traffic to database table "tramap.traffic"
         """
-        ids = self.g.g.es.get_attribute_values("id")
-        traffic = self.g.p_traffic.tolist()
-        direction = self.g.g.es.get_attribute_values("direction")
+        ids = self.g.p["id"].tolist()
+        traffic = self.g.p["traffic"].tolist()
+        direction = self.g.p["direction"].tolist()
         self.db.save_traffic(ids, traffic, direction)
 
 
 if __name__ == "__main__":
     tm = TransModel()
     delta, delta_mid = tm.trip_destination(0.05, 30)
-    #print delta, delta_mid
-    #tm.save_t()
     tm.count_transport()
     tm.save_traffic()
-    #print tm.g.one_to_one(1096325,284099, mode="geojson")
+
 

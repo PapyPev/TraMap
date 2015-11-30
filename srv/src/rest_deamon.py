@@ -35,8 +35,8 @@ def api():
     out = "<h2>Api info for TraMap</h2>"""
     out += "<b>/api/interests</b>  - return type for tables (don't need any parameters)"
     out += """<br><b>/api/ssp</b> - return Shortest path from A to B e.g
-        <a href="http://localhost:8082/api/ssp?lon1=60.61663&lat1=24.87078&lon2=60.63003&lat2=24.85747">
-            http://localhost:8082/api/ssp?lon1=60.61663&lat1=24.87078&lon2=60.63003&lat2=24.85747
+        <a href="api/ssp?lon1=24.87078&lat1=60.61663&lon2=24.85747&lat2=60.63003">
+            api/ssp?lon1=24.87078&lat1=60.61663&lon2=24.85747&lat2=60.63003
         </a>"""
     out += "<br><b>/api/compute_traffic</b> - start compute traffic (return info about start compute)"
     out += "<br><b>/api/compute_traffic_progress</b> - progress for compute traffic e.g {\"status\": \"ok\", \"result\": {\"progress\": 87, \"isrun\": true}}"

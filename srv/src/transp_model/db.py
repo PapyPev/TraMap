@@ -14,12 +14,12 @@ class Database:
         self.cur = self.conn.cursor()
 
         # get interest area geometry
-        sql = "SELECT geometry from general_area_information where name = %s"
+        sql = "SELECT geometry from tramap.general_area_information where name = %s"
         self.cur.execute(sql,[tm_settings.area_name_for_modeling])
         self.area_geometry = self.cur.fetchall()[0][0]
 
     def create_database_model(self):
-        print "Implement me, please!"
+        print "Implement me, please! You can use SQL script in example data folder"
         raise RuntimeError("create_database_model: Implement me, please!")
 
 
@@ -41,26 +41,27 @@ class Database:
         return (self.cur.fetchall(), column_name)
 
     def general_information(self, column, area_name=tm_settings.area_name_for_modeling):
-        sql = "SELECT "+column+" from general_area_information where name = %s"
+        sql = "SELECT "+column+" from tramap.general_area_information where name = %s"
         self.cur.execute(sql,[area_name])
         return self.cur.fetchall()[0][0]
 
     def save_traffic(self, ids, traffic, direction):
-        sql_d = "DELETE FROM traffic where true"
+        sql_d = "DELETE FROM tramap.traffic where true"
         self.cur.execute(sql_d)
-        sql_seq = "ALTER SEQUENCE traffic_id_seq RESTART WITH 1"
+        sql_seq = "ALTER SEQUENCE tramap.traffic_id_seq RESTART WITH 1"
         self.cur.execute(sql_seq)
-        sql = "INSERT INTO traffic(id, road_id, traffic, direction) VALUES (DEFAULT, %s, %s, %s)"
+        sql = "INSERT INTO tramap.traffic(id, road_id, traffic, direction) VALUES (DEFAULT, %s, %s, %s)"
         for i in xrange(0,len(ids)):
-            self.cur.execute(sql, [ids[i], traffic[i], direction[i]])
+            if traffic[i] != 0:
+                self.cur.execute(sql, [ids[i], traffic[i], direction[i]])
         self.conn.commit()
 
     def save_t(self, matrix, zones_property_id):
-        sql_d = "DELETE FROM od_pairs WHERE true;"
+        sql_d = "DELETE FROM tramap.od_pairs WHERE true;"
         self.cur.execute(sql_d)
-        sql_seq = "ALTER SEQUENCE od_pairs_id_seq RESTART WITH 1"
+        sql_seq = "ALTER SEQUENCE tramap.od_pairs_id_seq RESTART WITH 1"
         self.cur.execute(sql_seq)
-        sql = "INSERT INTO od_pairs(id, origin_id, destination_id, num_of_trip) VALUES (DEFAULT, %s, %s, %s);"
+        sql = "INSERT INTO tramap.od_pairs(id, origin_id, destination_id, num_of_trip) VALUES (DEFAULT, %s, %s, %s);"
         for i in xrange(matrix.shape[0]):
             for j in xrange(matrix.shape[1]):
                 if matrix[i][j] != 0 and matrix[i][j] != float("inf"):
@@ -69,23 +70,23 @@ class Database:
 
     def get_graph(self):
         sql = """SELECT id, source_id, target_id, oneway
-            FROM roads where ST_Intersects(geometry,%s) order by id"""
+            FROM tramap.roads where ST_Intersects(geometry,%s) order by id"""
         self.cur.execute(sql, [self.area_geometry])
 
         return self.cur.fetchall()
 
     def get_vertex_property(self, column):
-        sql = "SELECT "+column+" FROM nodes where ST_Intersects(geometry,%s) order by id"
+        sql = "SELECT "+column+" FROM tramap.nodes where ST_Intersects(geometry,%s) order by id"
         self.cur.execute(sql, [self.area_geometry])
         return np.transpose(self.cur.fetchall()).tolist()[0]
 
     def get_edge_property(self, column):
-        sql = "SELECT "+column+" FROM roads where ST_Intersects(geometry,%s) order by id"
+        sql = "SELECT "+column+" FROM tramap.roads where ST_Intersects(geometry,%s) order by id"
         self.cur.execute(sql, [self.area_geometry])
         return np.transpose(self.cur.fetchall()).tolist()[0]
 
     def get_zone_property(self, column):
-        sql = "SELECT "+column+" FROM zones where ST_Intersects(geometry,%s) order by id"
+        sql = "SELECT "+column+" FROM tramap.zones where ST_Intersects(geometry,%s) order by id"
         self.cur.execute(sql, [self.area_geometry])
         return np.transpose(self.cur.fetchall()).tolist()[0]
 

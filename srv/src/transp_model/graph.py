@@ -13,11 +13,7 @@ class Graph:
         self.max_vertex_id = -1
         self.max_count_vertex = 100000000  # max size of graph
         self.p_oneway = None
-        self.p_length = None
-        self.p_speed = None
-        self.p_vd = None
-        self.p_traffic = None
-
+        self.p = dict()
 
     def _create_vertex(self, table):
         """
@@ -46,6 +42,11 @@ class Graph:
         return id - self.min_vertex_id
 
     def create_graph(self, table):
+        """
+        Build graph.
+        :param table: list of edges (one edge: [id, source, target, is Oneway (boolen)]
+        :return:
+        """
         self._create_vertex(table)
         ig_e = [] # edges
         ig_d = [] # directions
@@ -58,12 +59,18 @@ class Graph:
                 ig_d.append(False)
 
         self.g.add_edges(ig_e)
-        self.g.es["direction"] = ig_d
-        self.p_traffic = np.zeros((len(ig_d)))
+        self.p["direction"] = np.array(ig_d)
+        self.p["traffic"] = np.zeros((len(ig_d)))
 
         self.p_oneway = np.transpose(map(lambda x: x[3], table)).tolist()
 
     def set_edge_property(self, property_name, data):
+        """
+        Add property data to graph
+        :param property_name: required property names: length, speed, vd  (in  km, km/h, m)
+        :param data: list with data (same length like number of edge (undirected))
+        :return:
+        """
         if len(data) == 1:
             out = np.zeros((self.g.ecount()))
         else:
@@ -71,37 +78,35 @@ class Graph:
             for i in xrange(len(data)):
                 out.append(data[i])
                 if not self.p_oneway[i]:
-                    out.append(data[i])
+                    if property_name == "vd":
+                        out.append(-data[i])
+                    else:
+                        out.append(data[i])
 
-        if property_name == "length":
-            self.p_length = np.array(out)
-        elif property_name == "speed":
-            self.p_speed = np.array(out)
-        elif property_name == "vd":
-            self.p_vd = np.array(out)
-        else:
-            self.g.es[property_name] = out
+        self.p[property_name] = np.array(out)
 
     def set_vertex_property(self, property_name, data):
         print "Implement me please!"
         raise RuntimeError("Implement me please!")
 
     def change_cost(self, k_length, k_time, k_cant):
-
-        np_speed = self.p_speed
-        np_length = self.p_length
-        np_vd = self.p_vd
+        """
+        Change cost(weight) for graph depend od coeficients.
+        Note: cost > 0  required!!
+        :param k_length: coef. for length
+        :param k_time:  coef. for time
+        :param k_cant: coef. for vertical distance
+        :return:
+        """
+        np_speed = self.p["speed"]
+        np_length = self.p["length"]
+        np_vd = self.p["vd"]
 
         a = time.time()
         if k_time == 0:
             np_out = (k_length * np_length +  k_cant * np_vd)
         else:
             np_out = (k_length * np_length + k_time * (np_length / np_speed) + k_cant * np_vd)
-
-
-        #print time.time() - a
-
-
 
         self.g.es["cost"] = np_out.tolist()
 
@@ -128,15 +133,24 @@ class Graph:
             pb.go(i)
         return C
 
-    def one_to_one(self,s ,t, output = "id"):
+    def one_to_one(self,s ,t, output="id"):
+        """
+        Compute shortest path from s to t
+        :param s: source node
+        :param t: target node
+        :param output: path output property name (e.g for edge 'id')
+        :return: {"distance": dist, "time": time, "features": out}
+        """
         path = self.g.get_shortest_paths(self.id_to_index(s), self.id_to_index(t),weights="cost",output="epath")[0]
         out = []
         dist = 0
         time = 0
+        np_speed = self.p["speed"]
+        np_length = self.p["length"]
         for i in path:
-            out.append(self.g.es[output][i])
-            dist += self.p_length[i]
-            time += self.p_length[i]/float(self.p_speed[i])
+            out.append(self.p[output][i])
+            dist += np_length[i]
+            time += np_length[i]/float(np_speed[i])
 
         return {"distance": dist, "time": time, "features": out}
 

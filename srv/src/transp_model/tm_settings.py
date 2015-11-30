@@ -13,8 +13,9 @@ enable_type_combination = { "shop":         ["home"],
                             "amenities":    ["home"]
                             }
 # cost settings for multi-path (count_traffic method)
-# [(k_length, k_time, k_vertical_distance),..]
-cost = [(1, 0, 1)]
+# [(k_length, k_time, k_vertical_distance, traffic_split),..]
+# traffic split is how % trips use this version of path. Sum traffic split must be 1.
+cost = [(1, 0, 0, 1)]
 
 # column name for speed for transpotation modeling
 speed = "speed_bike"
