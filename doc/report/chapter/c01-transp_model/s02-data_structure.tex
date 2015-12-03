@@ -5,28 +5,32 @@ In upcoming section following expressions will be used:
 $n$ & number of nodes\\
 $m$ & number of edges \\
 $z$ & number of zones\\
-$p$ & number of path computed for one pair of zone
+$N$ & number of path computed for one pair of zone
 \end{tabular}
 
-Transportation modelling described in previous section was implemented in Python programming language.
+Transportation modelling described in previous section was implemented in Python programming language using NumPy library.
 
 \subsection{Static shortest path search}
-For determined $C$ we use Dijkstra's algorithm (complexity $O(m +n log(n))$). So final complexity is 
+For determined $C$ we use Dijkstra's algorithm (complexity $O(m +n log(n) )$). So final complexity is 
 $$z (m + n log(n))$$
 For traffic count we used also Dijkstra's algorithm. Final complexity for traffic count is 
-$$p z (m + n log(n))$$
-For Dijkstra's algorithm we used Python library iGraph. iGraph is written in C programming language so it is fast. For example one Dijkstra running 30 ms ($n = 8000$ $m = 18000$).
+$$N z (m + n log(n))$$
+For Dijkstra's algorithm we used Python library iGraph. iGraph is written in C programming language so it is quite fast. For example one Dijkstra running 30 ms ($n = 8000$ $m = 18000$).
 
 \subsection{Data store}
 All data for transportation modelling are stored in relation database PostgreSQL with extension PostGIS. In database there are 4 main table:
 
-\begin{tabular}{ll}
-roads & road links (edges)\\
-nodes & nodes (vertexes)\\
-zones & list of zones\\ 
-traffic & \\
-general\_area\_information & contains interested area geometry\\
-od\_pair & Database implementation for $T$ matrix\\
+\begin{tabular}{|l|l|}
+\hline
+Table name & \\
+\hline
+\hline
+\textbf{roads} & road links (edges)\\
+\textbf{nodes} & nodes (vertexes)\\
+\textbf{zones} & list of zones\\ 
+\textbf{traffic} & \\
+\textbf{general\_area\_information} & contains interested area geometry\\
+\textbf{od\_pair} & Database implementation for $T$ matrix\\
 \end{tabular}
 
 \begin{figure}
@@ -36,3 +40,7 @@ od\_pair & Database implementation for $T$ matrix\\
 \end{figure}
 
 More details about DB you can find in project documentation on GitHub.
+
+\subsection{Future work}
+This problem is very hard ($O(N z (m + n log(n)))$), so it is suitable compute this problem in some parallel environment (shared or distributed memory).
+

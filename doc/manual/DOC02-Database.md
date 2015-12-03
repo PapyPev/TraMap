@@ -28,16 +28,17 @@
 | source_id     | FK integer| source node of edge |
 | target_id     | FK integer| target node of edge |
 | length        | double    | edge (link) length in km |
-| speed         | integer   | avarage speed (not accurate) |
-| cost          | double    | cost for shortest path search |
-| reverse_cost  | double    | cost in reverse direction |
-| X1 .. Y2      | double    | node coordinates for A* search |
-| geometry      | gemotery  | line |
+| speed         | integer   | avarage speed (not accurate) km/h |
+| vertical_distance_pos | double    | positive verical distance (positive value e.g. +4.56) |
+| vertical_distance_neg | double    | negative verical distance (negative value e.g. -4.56) |
+| oneway                | boolean   | true if edge is oneway |
+| geometry              | gemotery  | line |
 
 <u>Information</u> :<br> 
 <ul>
     <li>type : more information in <code>srv/data/osm2po.config</code></li>
     <li>cost : computed from speed and length</li>
+    <li>vertical_distance_pos/neg: value corespondes in positive direction</li>
 </ul>
 
 <h2 id="nodes">Table : nodes</h2>

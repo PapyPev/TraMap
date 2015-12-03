@@ -27,15 +27,15 @@ where in our case $$f(x) = x^{-2}$$.
 $T_i$ is number of trips outcoming from the zone (origin in the zone) $i$, $T_j$ is number of trips incoming to the zone (destination in zone) $j$. So sometimes transportation matrix is called \textit{OD Matrix}. 
 
 Now we must determine $K_i$ and $K_j$. We used iterative proportional fitting. It is iterative solution. Fist we compute $T^1$ with $K_i, K_j = 1$. After we can use iteration equation for $T$:
-$$T_{ij}^{m} = \frac{Z_i}{T_i^{m-1}} T_{ij}^{m-1}$$
-$$T_{ij}^{m} = \frac{Z_j}{T_j^{m-1}} T_{ij}^{m-1}$$
-where $Z_i$ and $Z_j$ are origin and destination trips (we know), $m$ is iteration.
+$$T_{ij}^{p} = \frac{Z_i}{T_i^{m-1}} T_{ij}^{k-1}$$
+$$T_{ij}^{k} = \frac{Z_j}{T_j^{m-1}} T_{ij}^{p}$$
+where $Z_i$ and $Z_j$ are origin and destination trips (we know), $k$ is iteration.
 
 \subsection{Count traffic}
 Now we know how many people travel from zone $i$ to zone $j$, so we can find path from $i$ to $j$ and 
-attributed this value into every edges in path.
+record this value into every edges in path. So we have to compute $z^2$ shortest paths ($z$ is number of zones).
 
-In our solution we compute N paths for every pair of zones. Every path is based on another cost. Cost is based on length, time and vertical distance. Final cost is linear combination these partition cost.
+In our solution we compute N paths for every pair of zones (final will be compute $N z^2$ paths). Every path is based on another cost. Cost is based on length, time and vertical distance. Final cost is linear combination these partition cost.
 $$c = \left(\begin{array}{ccc}
 k_t & k_l & k_h\\
 \end{array}\right) \left( \begin{array}{c}
@@ -44,4 +44,4 @@ l\\
 h\\
 \end{array} \right)$$
 
-where $c$ is cost, $t$ is time, $l$ is length and $h$ is vertical distance. Number of trip is split evenly among all the paths.
+where $c$ is cost, $t$ is time, $l$ is length and $h$ is vertical distance. Number of trip (traffic between two zones) is splitted between those paths.
