@@ -1,5 +1,5 @@
 
-# compute traffic for
+# compute traffic for 
 #transpotation_type = "walking"
 transpotation_type = "cycling"
 #transpotation_type = "driver"
@@ -14,8 +14,8 @@ enable_type_combination = { "shop":         ["home"],
                             }
 # cost settings for multi-path (count_traffic method)
 # [(k_length, k_time, k_vertical_distance, traffic_split),..]
-# traffic split is how % trips use this version of path. Sum traffic split must be 1.
-cost = [(1, 0, 0, 1)]
+# traffic_split is how % trips use this version of path. Sum traffic split must be 1.
+cost = [(1, 0, 0, 1)] # this setting means: only length cost, all trip use this path
 
 # column name for speed for transpotation modeling
 speed = "speed_bike"
@@ -32,6 +32,7 @@ age_category = ["age_00_05",
               "age_80_99" ]
 
 #enable destination zones type (same index like previous variable)
+# e.g age category age_00_05 can travel to ["amenities","shop","home"] type zones
 age_category_rules = [["amenities","shop","home"],
                       ["amenities","shop","home"],
                       ["amenities", "shop", "home"],
