@@ -62,15 +62,15 @@ $$\frac{Z_i}{\sum_j T_{ij}} = \left(\begin{array}{c}
 1.06159  \\
 1.02756\\
 \end{array}\right) \quad \frac{Z_j}{\sum_i T_{ij}} = \left(\begin{array}{ccc}
-0  & 0 &\\
+0  & 0 & 0\\
 \end{array}\right)$$
 
 
 \subsection{Count traffic}
 Now we know how many people travel from zone $i$ to zone $j$, so we can find path from $i$ to $j$ and 
-record this value into every edges in path. So we have to compute $z^2$ shortest paths ($z$ is number of zones).
+record this value into every edges in path. So we have to compute $z^2$ shortest paths ($z$ is number of zones). Because we have to compute shortest path between all pair of zones.
 
-In our solution we compute N paths for every pair of zones (final will be compute $N z^2$ paths). Every path is based on another cost. Cost is based on length, time and vertical distance. Final cost is linear combination these partition cost.
+In our solution we compute N paths for every pair of zones (finally will be compute $N z^2$ paths). Every path is based on another cost. Cost is based on length, time and vertical distance. Final cost is linear combination these partition cost.
 $$c = \left(\begin{array}{ccc}
 k_t & k_l & k_h\\
 \end{array}\right) \left( \begin{array}{c}
@@ -79,4 +79,9 @@ l\\
 h\\
 \end{array} \right)$$
 
-where $c$ is cost, $t$ is time, $l$ is length and $h$ is vertical distance. Number of trip (traffic between two zones) is splitted between those paths.
+where $c$ is cost, $t$ is time, $l$ is length and $h$ is vertical distance. Number of trip (traffic between two zones) is splitted between those paths. In Fig. \ref{img.paths} you can see multipath (same pareto optimal paths) between two zones.
+\begin{figure}
+\includegraphics[width=12cm]{img/c01-transp-model/paths.png}
+\label{img.paths}
+\caption{Possible paths between one pair of zone (multipath)}
+\end{figure}
