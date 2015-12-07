@@ -16,6 +16,14 @@ To do this, we will build on the concepts explained in the preceding paragraphs:
 % EN
 \section{REST Services}
 
+\begin{figure}
+  \centering
+  \includegraphics[width=9cm]{img/c01-transp-model/backend.eps}
+  \caption{Backend (REST)}
+  \label{img.asas}
+\end{figure}
+
+
 % FR
 % Pour que l'application puisse interagir avec le serveur, nous avons besoin de services REST expliqué dans le chapitre 2. Le script Python exécuté en Deamon sur le serveur propose des services REST. Chaque service est appellé par une requête HTTP depuis l'application puis retourne un JSON contenant les données demandées.
 
@@ -24,18 +32,14 @@ To do this, we will build on the concepts explained in the preceding paragraphs:
 For the application to interact with the server, we need REST services described in chapter 2. The Python script running on the server in Deamon offers REST services. Each service is called by an HTTP request from the application and returns a JSON containing the requested data.
 
 This service is based on python micro-framework Flask. Backend environment you can see in Fig. \ref{img.asas}
-\begin{figure}
-\centering
-\includegraphics[width=15cm]{img/c01-transp-model/backend.eps}
-\caption{Backend (REST)}
-\label{img.asas}
-\end{figure}
 
 % FR
 % La suite de ce paragraphe décrit chacun des services nécessaires et utilisés par l'application et explique les formats de JSON retournés.
 
 % EN
 The rest of this section describes each of the necessary services and used by the application and explains returned JSON formats.
+
+\newpage
 
 \begin{description}
 
