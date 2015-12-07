@@ -9,7 +9,13 @@ Information is an important asset related to geographic information systems, in 
 
 We done web application about transport information for Finland data source. Demo area is for city Hyvinkää in south Finland. Application is focused on bike traffic visualization with some additional function as finding shortest path.
 
-Our solution can split to 2 part frontend and backend. Frontend is written in JavaScript using Leaflet. Backend is written in python using Python, Flask.
+Our solution can split to 2 part frontend and backend. Frontend is written in JavaScript using Leaflet. Backend is written in python using Flask and PostgeSQL with extesion PostGIS.
+
+For computing traffic was used standard transportation model (Gravity model). Quality of results is depend on input data (demographic and socio-economic).
+
+Future work should be focus on time-dependent transportation modelling (using capacity of roads) and on parallel computing because this problem is very hard.
+
+Web application should be focus on real-time traffic recompute.
 
 % FR
 
