@@ -7,8 +7,8 @@ Today, open source and open data sources of information are increasingly used an
 
 ### Results
 
-You can see the <a href="https://youtu.be/MeVcQAZ-tio">demo video.</a>.
-Report form project is <a href="doc/report/main.pdf">readable here.</a>
+You can see the <a href="https://youtu.be/MeVcQAZ-tio">demo video.</a><br>
+Report form project is <a href="doc/report/main.pdf">readable here.</a><br>
 Manual is <a href="doc/manual">here.</a>
 
 ### Members
