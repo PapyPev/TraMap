@@ -1,6 +1,11 @@
 # HAMK Map-Project
 GIS Project - Finland Traffic informations
 
+### Results
+You can see to demo <a href="https://youtu.be/MeVcQAZ-tio">video</a>.
+Report form project is <a href="doc/report/main.pdf">here.</a>
+Manual is <a href="doc/manual">here.</a>
+
 ### Background
 
 Prediction of walking and cycling, the number of users there is no standardized methods exist in Finland. In some consultants to have its own prediction models (eg. Strafica Brutus), which is used to work a certain level of accuracy. Identification of the user potential, is a very important project planning and mutual comparison of circumstance. Widely available in Finland spatial data (RHR, YKR) would enable the number of users of the evaluation of spatial analysis. Ramboll Finland Oy has carried out research on the development of demand modeling. Work is still at an early stage and this work would be possible to promote walking and cycling, demand modeling development. The project would link smoothly to one of HAMK ongoing project work (see. Below) and Ramboll development.
