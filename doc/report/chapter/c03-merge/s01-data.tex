@@ -23,6 +23,14 @@ To do this, we will build on the concepts explained in the preceding paragraphs:
 
 For the application to interact with the server, we need REST services described in chapter 2. The Python script running on the server in Deamon offers REST services. Each service is called by an HTTP request from the application and returns a JSON containing the requested data.
 
+This service is based on python micro-framework Flask. Backend environment you can see in Fig. \ref{img.asas}
+\begin{figure}
+\centering
+\includegraphics[width=15cm]{img/c01-transp-model/backend.eps}
+\caption{Backend (REST)}
+\label{img.asas}
+\end{figure}
+
 % FR
 % La suite de ce paragraphe décrit chacun des services nécessaires et utilisés par l'application et explique les formats de JSON retournés.
 
@@ -44,8 +52,7 @@ The rest of this section describes each of the necessary services and used by th
   <li><b>/api/compute_traffic</b> - start compute traffic (return info about start compute)</li>
   <li><b>/api/compute_traffic_progress</b> - progress for compute traffic</li>
 <ul>
-    \end{lstlisting}
-
+    \end{lstlisting}   
   \item[/api/interests] \hfill \\ 
     Return a JSON object with all the interests point by table. \\
     \begin{lstlisting}[language=javascript]
@@ -63,10 +70,11 @@ The rest of this section describes each of the necessary services and used by th
       },{...}
     ]
   }
-    \end{lstlisting}
-
+    \end{lstlisting} 
+    
   \item[/api/ssp] \hfill \\ 
-    Return a JSON object with the geometry shortestpath, 
+  
+    Return a JSON object with the geometry shortest path, 
     time (in seconds) and distance (in meters) \\
     \begin{lstlisting}[language=javascript]
   {
@@ -96,21 +104,27 @@ The rest of this section describes each of the necessary services and used by th
     }
   }
     \end{lstlisting}
+    
   \item[/api/compute\_traffic] \hfill \\ 
-    compute\_traffic descrip \\
+  Recompute traffic take a lot of time, so REST must be asynchronous. In our approach we made two service. First service start compute and second return progress.  
+    If you call this service, server start recomputing traffic and return information about start of recompute. \\
     \begin{lstlisting}[language=javascript]
-  {
-    "status": "ok",
-    "result": ...
-  }
+{
+"status": "ok",
+"result": "calculation began"
+}
     \end{lstlisting}
+    
   \item[/api/compute\_traffic\_progress] \hfill \\ 
-    compute\_traffic\_progress descrip \\
+    This service is for view progress of recomputing traffic. Service return progress in \%.\\
     \begin{lstlisting}[language=javascript]
-  {
-    "status": "ok",
-    "result": ...
-  }
+{
+"status": "ok",
+ "result": {
+ 			"progress": 34,
+ 			"isrun": true
+ 		   }
+}
     \end{lstlisting}
   
 \end{description}
