@@ -177,7 +177,7 @@ In fact, we can imagine the structure of the application like this: \\
 
 
 % EN
-In the previous paragraph and the proposed scheme, there is talk of a JSON configuration file. Indeed, to avoid duplication of functions and greater flexibility, it is easier to use a JSON configuration file coupled with a JavaScript class containing Getters. We will use and four configuration files:
+In the previous paragraph and the proposed scheme, there is talk of a JSON configuration file. Indeed, to avoid duplication of functions and greater flexibility, it is easier to use a JSON configuration file coupled with a JavaScript class containing Getters. We will use four configuration files:
 
 \begin{itemize}
   \item configMap : This file contains the default configurations of the map to load (zoom, center, TOC position)
@@ -195,7 +195,7 @@ In the previous paragraph and the proposed scheme, there is talk of a JSON confi
 \subsubsection{Classes}
 
 % FR
-% Chacun des fichiers JSON de configuration possède au moins une classe Javascript dans le répertoire ``/lib'' qui lui est associé. En effet, comme expliqué dans le paragraphe précédent, il est plus facile d'utiliser des objets et des outils comme des Getters et Setters pour accéder à un fichier de configuration JSON. De fait, nous avons les classes suivantes : 
+% Chacun des fichiers JSON de configuration possède au moins une classe Javascript dans le répertoire ``/js'' qui lui est associé. En effet, comme expliqué dans le paragraphe précédent, il est plus facile d'utiliser des objets et des outils comme des Getters et Setters pour accéder à un fichier de configuration JSON. De fait, nous avons les classes suivantes : 
 
 % \begin{itemize}
 %   \item classMapProperties : Permet de récupérer toutes les informations relatives à la carte contenu dans le fichier configMap.json
@@ -208,7 +208,7 @@ In the previous paragraph and the proposed scheme, there is talk of a JSON confi
 
 % EN
 
-Each of the configuration files JSON Javascript has at least one class in the `` / lib '' associated with it. Indeed, as explained in the previous paragraph, it is easier to use objects and tools Getters and Setters like to access a JSON configuration file. In fact, we have the following classes:
+Each of the configuration files JSON Javascript has at least one class in the `` /js '' associated with it. Indeed, as explained in the previous paragraph, it is easier to use objects and tools Getters and Setters like to access a JSON configuration file. In fact, we have the following classes:
 
 \begin {itemize}
   \item classMapProperties: Retrieves all information about the map contained in the file configMap.json
