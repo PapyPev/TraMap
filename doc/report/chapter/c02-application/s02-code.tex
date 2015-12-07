@@ -177,7 +177,7 @@ In fact, we can imagine the structure of the application like this: \\
 
 
 % EN
-In the previous paragraph and the proposed scheme, there is talk of a JSON configuration file. Indeed, to avoid duplication of functions and greater flexibility, it is easier to use a JSON configuration file coupled with a JavaScript class containing Getters. We will use and four configuration files:
+In the previous paragraph and the proposed scheme, there is talk of a JSON configuration file. Indeed, to avoid duplication of functions and greater flexibility, it is easier to use a JSON configuration file coupled with a JavaScript class containing Getters. We will use four configuration files:
 
 \begin{itemize}
   \item configMap : This file contains the default configurations of the map to load (zoom, center, TOC position)
@@ -195,7 +195,7 @@ In the previous paragraph and the proposed scheme, there is talk of a JSON confi
 \subsubsection{Classes}
 
 % FR
-% Chacun des fichiers JSON de configuration possède au moins une classe Javascript dans le répertoire ``/lib'' qui lui est associé. En effet, comme expliqué dans le paragraphe précédent, il est plus facile d'utiliser des objets et des outils comme des Getters et Setters pour accéder à un fichier de configuration JSON. De fait, nous avons les classes suivantes : 
+% Chacun des fichiers JSON de configuration possède au moins une classe Javascript dans le répertoire ``/js'' qui lui est associé. En effet, comme expliqué dans le paragraphe précédent, il est plus facile d'utiliser des objets et des outils comme des Getters et Setters pour accéder à un fichier de configuration JSON. De fait, nous avons les classes suivantes : 
 
 % \begin{itemize}
 %   \item classMapProperties : Permet de récupérer toutes les informations relatives à la carte contenu dans le fichier configMap.json
@@ -208,7 +208,13 @@ In the previous paragraph and the proposed scheme, there is talk of a JSON confi
 
 % EN
 
-Each of the configuration files JSON Javascript has at least one class in the `` / lib '' associated with it. Indeed, as explained in the previous paragraph, it is easier to use objects and tools Getters and Setters like to access a JSON configuration file. In fact, we have the following classes:
+Each of the configuration files JSON Javascript has at least one class in the `` /js '' associated with it. Indeed, as explained in the previous paragraph, it is easier to use objects and tools Getters and Setters like to access a JSON configuration file. In fact, we have the following classes:
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=12cm]{img/c02-application/png/app-class-loading.png}
+  \caption{Loading JSON and Classes}
+\end{figure}
 
 \begin {itemize}
   \item classMapProperties: Retrieves all information about the map contained in the file configMap.json
@@ -219,15 +225,45 @@ Each of the configuration files JSON Javascript has at least one class in the ``
   \item classLayerProperties: This class does not depend on a configuration file, it allows to structure a Layer with attributes allowing interractions between the map and the table of contents (TOC). An object from this class will then have a name, an alias, a position, a type layer, a URL to the layer on the GeoServer and map item to display.
 \end {itemize}
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% FR
+%\subsubsection{Evènements}
+
+% EN
+\subsubsection{Events}
+
+% FR
+% Le coeur de l'application est concentrée dans des fichiers Javascript préfixés par ``action...''. Chacun de ces fichiers, triés par thème, permet de générer le contenu de la carte. Dans nos sources, les fichiers sont chargés dans l'ordre suivant afin d'obtenir toutes les fonctions nécessaires avant de charger la totalité de la carte : 
+
+% \begin {itemize}
+%   \item Les fichiers Javascript des différents Frameworks (jQuery, Bootstrap, Extensions de Bootstrap, Leaflet, Extensions de Leaflet).
+%   \item Les fichiers de classes associés aux configurations JSON du paragraphe précédent.
+%   \item actionPopup : Ce fichier contient les fonctions relatives aux popup renseignées dans le fichier de configuration JSON des Popup. En effet, chaque popup dispose de ses fonctions, de ses interractions avec la carte et de ses spécificités. Parmis ces fonctions, nous chargeons également le contenu HTML des popup qui seront au-dessus de la carte.
+%   \item actionGeoServerLayers : Ce fichier contient les fonctions relatives aux accès GeoServer, aux layers, à leur contenus et tout ce qui s'y rapproche, notamment la récupération des couches de la TOC, la gestion des styles et des bulles d'informations.
+%   \item actionMapLoader : Ce fichier est le fichier central de toute l'application, il charge tout les composants nécessaires. Dans un premier temps il se doit de tester la connexion serveur, puis de charger toutes les classes associés aux fichiers JSON, génère les boutons de popup et d'action, récupère les couches GéoServer pour générer la TOC et les afficher sur la carte. Le fichier contient également le rafraichissement de la carte pour chaque déplacement et les variables globales utilisées dans les autres scripts.
+% \end {itemize}
+
+% EN
+The core of the application is concentrated in Javascript files prefixed with ``action...''. Each of the data sorted by theme, to generate the contents of the map. In our sources, the files are loaded in the following order to obtain all the necessary functions before loading the entire map:
+
+\begin {itemize}
+  \item Javascript files of different frameworks (jQuery, Bootstrap, bootstrap extensions, Leaflet, Leaflet Extensions).
+  \item Class files associated with JSON configurations of the preceding paragraph.
+  \item actionPopup: This file contains the related functions indicated in the popup JSON configuration file. Indeed, every popup has its functions, its interractions with the map and its specificities. Among these functions, we also take care of the HTML content that will show popup over the map.
+  \item actionGeoServerLayers: This file contains the functions relating to GeoServer access to layers, their contents and all that it brings, including the recovery of layers of the TOC, management styles and tooltip information.
+  \item actionMapLoader : This file is the main file from our application, it loads all the necessary components. At first it should test the server connection, then load all classes associated with JSON files, generates the popup buttons and actions, recovers GeoServer layers to generate the TOC and display them on the map. The file also contains the refresh map for each move and global variables used in other scripts.
+\end {itemize}
+
 % \begin{lstlisting}[language=JavaScript]
 % % Code here
 % \end{lstlisting}
 
-
 \begin{figure}[ht]
-\centering
-\includegraphics[width=9cm]{img/c02-application/png/app-server-interact.png}
-\caption{Interaction between the application and the server}
+  \centering
+  \includegraphics[width=9cm]{img/c02-application/png/app-server-interact.png}
+  \caption{Interaction between the application and the server}
 \end{figure}
 
 
