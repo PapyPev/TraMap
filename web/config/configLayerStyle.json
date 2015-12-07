@@ -265,113 +265,113 @@
       "zoom_max": 17,
       "styles": [
         {
-          "value_min": 0.0,
-          "value_max": 0.5,
+          "value_min": 0.00,
+          "value_max": 1.09,
           "color": "#1a9641",
           "weight": 1,
           "opacity": 0.5
         },
         {
-          "value_min": 0.5,
-          "value_max": 1.2,
+          "value_min": 1.09,
+          "value_max": 2.37,
           "color": "#3fa74b",
           "weight": 2,
           "opacity": 0.5
         },
         {
-          "value_min": 1.2,
-          "value_max": 1.9,
+          "value_min": 2.37,
+          "value_max": 4.75,
           "color": "#64b956",
           "weight": 3,
           "opacity": 0.5
         },
         {
-          "value_min": 1.9,
-          "value_max": 3.1,
+          "value_min": 4.75,
+          "value_max": 7.33,
           "color": "#89cb61",
           "weight": 4,
           "opacity": 0.5
         },
         {
-          "value_min": 3.1,
-          "value_max": 4.6,
+          "value_min": 7.33,
+          "value_max": 10.05,
           "color": "#abdb6f",
           "weight": 5,
           "opacity": 0.5
         },
         {
-          "value_min": 4.6,
-          "value_max": 6.4,
+          "value_min": 10.05,
+          "value_max": 12.68,
           "color": "#c3e586",
           "weight": 6,
           "opacity": 0.5
         },
         {
-          "value_min": 6.4,
-          "value_max": 8.4,
+          "value_min": 12.68,
+          "value_max": 15.90,
           "color": "#dbef9d",
           "weight": 7,
           "opacity": 0.5
         },
         {
-          "value_min": 8.4,
-          "value_max": 10.4,
+          "value_min": 15.90,
+          "value_max": 19.96,
           "color": "#f3f9b4",
           "weight": 8,
           "opacity": 0.5
         },
         {
-          "value_min": 10.4,
-          "value_max": 12.5,
+          "value_min": 19.96,
+          "value_max": 23.17,
           "color": "#fef4b3",
           "weight": 9,
           "opacity": 0.5
         },
         {
-          "value_min": 12.5,
-          "value_max": 15.5,
+          "value_min": 23.17,
+          "value_max": 31.09,
           "color": "#fede9a",
           "weight": 10,
           "opacity": 0.5
         },
         {
-          "value_min": 15.5,
-          "value_max": 22.4,
+          "value_min": 31.09,
+          "value_max": 43.57,
           "color": "#fdc980",
           "weight": 11,
           "opacity": 0.5
         },
         {
-          "value_min": 22.4,
-          "value_max": 29.2,
+          "value_min": 43.57,
+          "value_max": 55.60,
           "color": "#fdb367",
           "weight": 12,
           "opacity": 0.5
         },
         {
-          "value_min": 29.2,
-          "value_max": 35.0,
+          "value_min": 55.60,
+          "value_max": 76.79,
           "color": "#f59053",
           "weight": 13,
           "opacity": 0.5
         },
         {
-          "value_min": 35.0,
-          "value_max": 38.0,
+          "value_min": 76.79,
+          "value_max": 106.43,
           "color": "#eb6840",
           "weight": 14,
           "opacity": 0.5
         },
         {
-          "value_min": 38.0,
-          "value_max": 52.2,
+          "value_min": 106.43,
+          "value_max": 115.69,
           "color": "#e1402e",
           "weight": 15,
           "opacity": 0.5
         },
         {
-          "value_min": 52.2,
-          "value_max": 65.0,
+          "value_min": 115.69,
+          "value_max": 132.62,
           "color": "#d7191c",
           "weight": 16,
           "opacity": 0.5
