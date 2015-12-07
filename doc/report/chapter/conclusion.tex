@@ -4,24 +4,29 @@
 % FR
 % L'information représente un actif important lié aux systèmes d'information géographique, dans le contexte actuel, la concurrence effrénée à laquelle se livrent les entreprises entraîne la multiplication des SIG comme atout majeur lors des décisions stratégiques.
 
+% Durant tout notre projet nous avons travaillé sur une application open source basée sur des données ouvertes sur les informations traffic des déplacements à vélo sur la ville de Hyvinkää, au sud de la Finlande. Notre application se centre sur la visualisation des informations géographiques ainsi que des fonctions additionnelles comme la recherche du chemin le plus court.
+
+% Notre logiciel peut être découpé en deux parties : la partie frontend et la partie backend. La partie frontend, écrite en Javascript utilisant Leaflet et Bootstrap, permet la consultation. La partie backend, écrite en Python utilisant Flask et le moteur de base de données PostgreSQL avec son extension PostGIS, permet le stockage et l'envoi d'information des données.
+
+% Pour calculer les informations traffic, nous avons utilisé un modèle de transport standard (Gravity model), ainsi la qualité de nos résultat dépend des données d'entrées (démographie et socio-économiques).
+
+% Notre projet peut encore être poussé bien plus loin et continuer d'évoluer. Par l'ajout d'outils applicatif, tout comme sur le calcul des chemins. A court terme, la partie frontend peut être doté d'une partie statistique informant sur les données de l'application ; la partie backend peut se concentrer sur d'autres paramètres de calcul pour le flux de traffic (notamment la capacité de la route) et être optimisé en utilisant des calculs parallèles.
+
+% A long terme, il serait intéressant de pouvoir constituer une application basée sur des données en temps réel, couplant ainsi les données des transports en commun, des conditions météos, des fluctiations de traffics des voitures, des cyclistes et des piétons.
+
+
 % EN
 Information is an important asset related to geographic information systems, in the current context, the unbridled competition that companies indulge causes the proliferation of GIS as a major asset in strategic decisions.
 
-We done web application about transport information for Finland data source. Demo area is for city Hyvinkää in south Finland. Application is focused on bike traffic visualization with some additional function as finding shortest path.
+During our project we were working on an open source application based on open data traffic information for bicycle trips on the city of Hyvinkää, southern Finland. Our application focuses on the visualization of geographic information as well as additional features such as the search for the shortest path.
 
-Our solution can split to 2 part frontend and backend. Frontend is written in JavaScript using Leaflet. Backend is written in python using Flask and PostgeSQL with extesion PostGIS.
+Our software can be divided into two parts: frontend and backend. The frontend part, written in JavaScript, using Bootstrap and Leaflet, allows the consultation. The backend part, written in Python and Flask using the PostgreSQL database engine with its PostGIS extension, allows the storage and transmission of information data.
 
-For computing traffic was used standard transportation model (Gravity model). Quality of results is depend on input data (demographic and socio-economic).
+To calculate the traffic information we used a standard transport model (Gravity model) and the quality of our results depends on the input data (demographics and socioeconomic).
 
-Future work should be focus on time-dependent transportation modelling (using capacity of roads) and on parallel computing because this problem is very hard.
+Our project can still be pushed much further and continue to evolve. By adding application tools, as the calculation of paths. In the short term, the frontend part can be provided with a statistical part informing about the application data ; the backend part can concentrate on other design parameters for traffic flow (including the capacity of the road) and be optimized using parallel calculations.
 
-Web application should be focus on real-time traffic recompute.
-
-% FR
-
-
-% EN
-
+In the long term, it would be interesting to create an application based on real time data and coupling data transport, weather conditions, traffics fluctiations cars, cyclists and pedestrians.
 
 
 
