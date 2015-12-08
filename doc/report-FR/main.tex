@@ -8,17 +8,17 @@
 
 %French-specific commands
 %--------------------------------------
-%\usepackage[frenchb]{babel}
+\usepackage[frenchb]{babel}
 \usepackage[autolanguage]{numprint}
 %--------------------------------------
 
 % English
-\usepackage[UKenglish]{babel}
+%\usepackage[UKenglish]{babel}
 
 %Hyphenation rules
 %--------------------------------------
-%\usepackage{hyphenat}
-%\hyphenation{mathéma-tiques récu-pérer}
+\usepackage{hyphenat}
+\hyphenation{mathéma-tiques récu-pérer}
 %--------------------------------------
 
 % hypertext links
@@ -99,13 +99,13 @@
     
     \includegraphics[width=0.5\textwidth]{./img/c00-main/hamk-ramboll.png}
     \par\vspace{1cm}
-    {\scshape HAMK University of Applied Sciences \\ and Ramboll Group \par}
+    {\scshape HAMK University of Applied Sciences \\ et Ramboll Group \par}
     \vspace{1cm}
     
-    {\scshape\Large Project Report\par}
+    {\scshape\Large Rapport de Projet\par}
     \vspace{1.5cm}
     
-    {\huge\bfseries Transportation modeling and Web content\par}
+    {\huge\bfseries Modèle de Transport et Consultation web\par}
     \vspace{2cm}
     
     {\Large\itshape František Kolovský \\Pierre-Vincent Vrot\par}
@@ -139,11 +139,11 @@
 % INTRODUCTION
 %--------------------------------------
 
-\chapter*{Abstract}
+\chapter*{Résumé}
 \addcontentsline{toc}{chapter}{Abstract}
 \input{./chapter/abstract.tex}
 
-\chapter*{Acknowledgments}
+\chapter*{Remerciements}
 \addcontentsline{toc}{chapter}{Acknowledgments.tex}
 \input{./chapter/acknowledgments.tex}
 
@@ -157,16 +157,16 @@
 \addcontentsline{toc}{chapter}{Introduction}
 \input{./chapter/introduction.tex}
 
-\chapter{Transportation Modeling}
+\chapter{Modèle de Transport}
 \input{./chapter/c01-transp_model/s01-theorical.tex}
 \input{./chapter/c01-transp_model/s02-data_structure.tex}
 %\input{./chapter/c01-transp_model/s03-practice.tex}
 
-\chapter{Web content}
+\chapter{Consultation web}
 \input{./chapter/c02-application/s01-prototype.tex}
 \input{./chapter/c02-application/s02-code.tex}
 
-\chapter{Merge}
+\chapter{Combinaison}
 \input{./chapter/c03-merge/s01-data.tex}
 \input{./chapter/c03-merge/s02-app-model.tex}
 
