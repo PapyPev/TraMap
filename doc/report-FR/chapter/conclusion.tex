@@ -1,0 +1,21 @@
+% CONCLUSION
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% FR
+L'information représente un actif important lié aux systèmes d'information géographique, dans le contexte actuel, la concurrence effrénée à laquelle se livrent les entreprises entraîne la multiplication des SIG comme atout majeur lors des décisions stratégiques.
+
+Durant tout notre projet nous avons travaillé sur une application open source basée sur des données ouvertes sur les informations traffic des déplacements à vélo sur la ville de Hyvinkää, au sud de la Finlande. Notre application se centre sur la visualisation des informations géographiques ainsi que des fonctions additionnelles comme la recherche du chemin le plus court.
+
+Notre logiciel peut être découpé en deux parties : la partie frontend et la partie backend. La partie frontend, écrite en Javascript utilisant Leaflet et Bootstrap, permet la consultation. La partie backend, écrite en Python utilisant Flask et le moteur de base de données PostgreSQL avec son extension PostGIS, permet le stockage et l'envoi d'information des données.
+
+Pour calculer les informations traffic, nous avons utilisé un modèle de transport standard (Gravity model), ainsi la qualité de nos résultat dépend des données d'entrées (démographie et socio-économiques).
+
+Notre projet peut encore être poussé bien plus loin et continuer d'évoluer. Par l'ajout d'outils applicatif, tout comme sur le calcul des chemins. A court terme, la partie frontend peut être doté d'une partie statistique informant sur les données de l'application ; la partie backend peut se concentrer sur d'autres paramètres de calcul pour le flux de traffic (notamment la capacité de la route) et être optimisé en utilisant des calculs parallèles.
+
+A long terme, il serait intéressant de pouvoir constituer une application basée sur des données en temps réel, couplant ainsi les données des transports en commun, des conditions météos, des fluctiations de traffics des voitures, des cyclistes et des piétons.
+
+
+
+
+
+

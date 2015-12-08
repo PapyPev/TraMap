@@ -1,0 +1,201 @@
+\documentclass[12pt, a4paper, final]{report}
+
+%Encoding
+%--------------------------------------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+%--------------------------------------
+
+%French-specific commands
+%--------------------------------------
+%\usepackage[frenchb]{babel}
+\usepackage[autolanguage]{numprint}
+%--------------------------------------
+
+% English
+\usepackage[UKenglish]{babel}
+
+%Hyphenation rules
+%--------------------------------------
+%\usepackage{hyphenat}
+%\hyphenation{mathéma-tiques récu-pérer}
+%--------------------------------------
+
+% hypertext links
+%--------------------------------------
+\usepackage{hyperref}
+
+% Code format
+%--------------------------------------
+\usepackage{listings}
+\usepackage{color}
+\definecolor{lightgray}{rgb}{.9,.9,.9}
+\definecolor{darkgray}{rgb}{.4,.4,.4}
+\definecolor{purple}{rgb}{0.65, 0.12, 0.82}
+
+\lstdefinelanguage{JavaScript}{
+  keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break},
+  keywordstyle=\color{blue}\bfseries,
+  ndkeywords={class, export, boolean, throw, implements, import, this},
+  ndkeywordstyle=\color{darkgray}\bfseries,
+  identifierstyle=\color{black},
+  sensitive=false,
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  commentstyle=\color{purple}\ttfamily,
+  stringstyle=\color{red}\ttfamily,
+  morestring=[b]',
+  morestring=[b]"
+}
+
+\lstset{
+   language=JavaScript,
+   backgroundcolor=\color{lightgray},
+   extendedchars=true,
+   basicstyle=\footnotesize\ttfamily,
+   showstringspaces=false,
+   showspaces=false,
+   numbers=left,
+   numberstyle=\footnotesize,
+   numbersep=9pt,
+   tabsize=2,
+   breaklines=true,
+   showtabs=false,
+   captionpos=b
+}
+
+% Folder tree
+%--------------------------------------
+\usepackage{dirtree}
+
+%Other package
+%--------------------------------------
+\usepackage{titlesec} %titleformat
+\usepackage{graphicx} %graphics
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{epstopdf}
+%--------------------------------------
+
+%Disable "Chapter" before your chapter section
+\titleformat{\chapter}[hang]{\bf\huge}{\thechapter}{2pc}{}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Glossary
+\usepackage[acronym]{glossaries}
+\makeglossaries
+\input{./chapter/glossaries.tex}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{titlepage}
+
+    \centering
+    
+    \includegraphics[width=0.5\textwidth]{./img/c00-main/hamk-ramboll.png}
+    \par\vspace{1cm}
+    {\scshape HAMK University of Applied Sciences \\ and Ramboll Group \par}
+    \vspace{1cm}
+    
+    {\scshape\Large Project Report\par}
+    \vspace{1.5cm}
+    
+    {\huge\bfseries Transportation modeling and Web content\par}
+    \vspace{2cm}
+    
+    {\Large\itshape František Kolovský \\Pierre-Vincent Vrot\par}
+    \vfill
+    
+    Erasmus Exchange from \par
+    University of West Bohemia \par
+    and IMERIR \par
+    \includegraphics[width=0.5\textwidth]{./img/c00-main/geomatika-imerir.png} 
+    \vfill
+    
+    {\large \today  \par version 1.0 \par}
+    
+\end{titlepage}
+
+% Paragraphes spaces
+%\setlength{\parindent}{4em}
+\setlength{\parskip}{1em}
+%\renewcommand{\baselinestretch}{1.5}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%Empty page
+%--------------------------------------
+\newpage
+\null
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% INTRODUCTION
+%--------------------------------------
+
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+\input{./chapter/abstract.tex}
+
+\chapter*{Acknowledgments}
+\addcontentsline{toc}{chapter}{Acknowledgments.tex}
+\input{./chapter/acknowledgments.tex}
+
+\setlength{\parskip}{0em}
+\tableofcontents
+\setlength{\parskip}{1em}
+
+% MAIN
+%--------------------------------------
+\chapter*{Introduction}
+\addcontentsline{toc}{chapter}{Introduction}
+\input{./chapter/introduction.tex}
+
+\chapter{Transportation Modeling}
+\input{./chapter/c01-transp_model/s01-theorical.tex}
+\input{./chapter/c01-transp_model/s02-data_structure.tex}
+%\input{./chapter/c01-transp_model/s03-practice.tex}
+
+\chapter{Web content}
+\input{./chapter/c02-application/s01-prototype.tex}
+\input{./chapter/c02-application/s02-code.tex}
+
+\chapter{Merge}
+\input{./chapter/c03-merge/s01-data.tex}
+\input{./chapter/c03-merge/s02-app-model.tex}
+
+\chapter*{Conclusion}
+\addcontentsline{toc}{chapter}{Conclusion}
+\input{./chapter/conclusion.tex}
+
+
+% BIBLIOGRAPHIE
+%--------------------------------------
+% TODO: Bibliography
+\input{./chapter/bibliography.tex}
+
+% ANNEXES
+%--------------------------------------
+\appendix
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\setlength{\parskip}{0em}
+\listoffigures
+%\listoftables
+
+% GLOSSAIRE
+%--------------------------------------
+
+\addcontentsline{toc}{chapter}{Glossary}
+\printglossaries
+
+\end{document}
