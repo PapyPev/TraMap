@@ -1,22 +1,61 @@
-\section{Implementation}
-In upcoming section following expressions will be used:
+% TM - Data Structure
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% EN
+%\section{Implementation}
+
+% FR
+\section{Implémentation}
+
+% EN
+% In upcoming section following expressions will be used:
+
+% \begin{tabular}{ll}
+%   $n$ & number of nodes\\
+%   $m$ & number of edges \\
+%   $z$ & number of zones\\
+%   $N$ & number of path computed for one pair of zone
+% \end{tabular}
+
+% Transportation modelling described in previous section was implemented in Python programming language using NumPy library.
+
+% FR
+Dans cette section, les expressions suivantes vont être utilisées :
 
 \begin{tabular}{ll}
-$n$ & number of nodes\\
-$m$ & number of edges \\
-$z$ & number of zones\\
-$N$ & number of path computed for one pair of zone
+  $n$ & nombre de noeuds\\
+  $m$ & nombre de bords \\
+  $z$ & nombre de zone\\
+  $N$ & nombre de chemin calculé pour une paire de zone
 \end{tabular}
 
-Transportation modelling described in previous section was implemented in Python programming language using NumPy library.
+La modélisation de transport décrits dans la section précédente a été mise en œuvre dans le langage de programmation Python en utilisant la bibliothèque NumPy.
 
-\subsection{Static shortest path search}
-For determined $C$ we use Dijkstra's algorithm (complexity $O(m +n log(n) )$). So final complexity is 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% EN
+%\subsection{Static shortest path search}
+
+% FR
+\subsection{Recherche du plus court chemin statique}
+
+% EN
+% For determined $C$ we use Dijkstra's algorithm (complexity $O(m +n log(n) )$). So final complexity is 
+% $$O(z (m + n log(n)))$$
+% For traffic count we used also Dijkstra's algorithm. Final complexity for traffic count is 
+% $$O(N z (m + n log(n)))$$
+% For Dijkstra's algorithm we used Python library iGraph. iGraph is written in C programming language so it is quite fast. For example one Dijkstra running 30 ms ($n = 8000$ $m = 18000$).
+
+% FR
+Pour déterminer $C$ nous utilisons l'algorithme de Dijkstra's (de complexité $O(m +n log(n) )$). De fait, la complexité finale est de
 $$O(z (m + n log(n)))$$
 For traffic count we used also Dijkstra's algorithm. Final complexity for traffic count is 
 $$O(N z (m + n log(n)))$$
 For Dijkstra's algorithm we used Python library iGraph. iGraph is written in C programming language so it is quite fast. For example one Dijkstra running 30 ms ($n = 8000$ $m = 18000$).
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Data store}
 All data for transportation modelling are stored in relation database PostgreSQL with extension PostGIS. PostGIS is spatial extension. Using it you can manipulate with line, point, polygon, raster.
 
@@ -47,6 +86,7 @@ In Fig \ref{img.schema} there are all table in database model and relationships 
 
 More details about DB you can find in project documentation on GitHub.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Future work}
 This method of transportation modelling is very hard ($O(N z (m + n log(n)))$), so it is suitable compute this problem in some parallel environment (shared (Threads) or distributed memory (MapReduce or MPI)).
 
